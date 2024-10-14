@@ -1,0 +1,158 @@
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+.calendar {
+  padding: 30px;
+  width: 450px;
+  background-color: #ddd; 
+  border-radius: 15px;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.calendar-nav button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.calendar-nav button {
+  background-color: #e0e0e0;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.calendar-month {
+  font-weight: bold;
+  font-size: 18px;
+  color: black;
+  border-radius: 10px;
+  background-color: #ffcc00;
+  border: 2px solid black;
+  padding: 10px 50px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day-name{
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px;
+  background-color: #782324;
+  color: white;
+}
+
+.calendar-indicator{
+  display: flex;
+  flex-direction: row; 
+  gap: 20px;
+  font-weight: 700;
+  
+}
+
+.calendar-day{
+  text-align: center;
+  padding: 5px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.calendar-day.active {
+  background-color: #ffcc00;
+  border: 2px solid black;
+  font-weight: bold;
+}
+
+.calendar-day:hover{
+  background-color:  #782324;
+  transition: background-color 0.3s;
+  font-weight: 700;
+  color: white
+}
+
+.calendar-day.reserved {
+  background-color: gold; 
+  color: black;
+  font-weight: bold;
+  border: 2px solid black;
+  min-height: 0vh
+}
+
+.calendar-day.reserved:hover {
+  background-color: #ffcc00; 
+}
+
+.subheader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.subheader h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.previous{
+  font-weight: 900;
+}
+
+.next{
+  font-weight: 900;
+}
+
+.previous:hover{
+  background-color: #782324;
+  transition: background-color 0.3s;
+  color: #ffcc00;
+}
+
+.next:hover{
+  background-color: #782324;
+  transition: background-color 0.3s;
+  color: #ffcc00;
+}
+
+.calendar-day.past {
+  opacity: 0.5;
+}
+
+.reserved-times {
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+.reserved-time {
+  color: red;
+}
+
+.calendar-day.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.highlight {
+  background-color: red; 
+  color: white;
+  cursor: pointer; 
+}
+
+

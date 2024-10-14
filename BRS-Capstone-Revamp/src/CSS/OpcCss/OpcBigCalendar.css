@@ -1,0 +1,303 @@
+.opc-big-calendar {
+  display: flex;
+  flex-direction: row; 
+  width: 79%; 
+  margin-top: -320px;
+  margin-left: 310px;
+  background-color: #ddd;
+  border-radius: 15px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-right: 30px;
+  padding-left: 30px;
+  height: 600px;
+  overflow-y: auto; 
+}
+
+.opc-big-calendar-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 5px;
+    margin-top: -240px;
+}
+
+.opc-big-calendar-container h1 {
+    margin: 330px;
+    font-size: 2.5rem;
+    color: black;
+  }
+
+  .big-calendar {
+    flex: 1; 
+    padding: 10px;
+  }
+
+  .opc-big-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -20px;
+  }
+  
+  .opc-big-calendar-header button {
+    font-size: 16px;
+  }
+  
+  .opc-big-calendar-header h2 {
+    font-size: 30px;
+  }
+  
+  .opc-big-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    font-size: 24px;
+  }
+
+  .opc-big-calendar-day-name{
+    background-color:#782324;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .opc-big-calendar-day-name, 
+  .opc-big-calendar-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px; 
+    border: 1px solid #ddd;
+    text-align: center;
+    position: relative;
+  }
+  
+  .opc-big-calendar-day {
+    background-color: #f9f9f9;
+    cursor: pointer;
+    color: #782324;
+  }
+
+  .opc-big-calendar-day:hover{
+    background-color: #782324;
+    color: #ffcc00;
+  }
+  
+  .opc-big-calendar-day.selected {
+    background-color: #782324;
+    color: #ffcc00;
+  }
+  
+  .opc-big-calendar-day.empty {
+    background-color: #fff;
+  }
+  
+  .opc-big-calendar-day-number {
+    font-size: 24px;
+    font-weight: bold;
+
+  }
+  
+  .opc-big-calendar-events-content {
+    width: 35%; 
+    padding: 25px;
+    background-color: #f9f9f9;
+    border-left: 1px solid #ddd;
+    border-radius: 15px;
+    overflow-y: auto; 
+  }
+
+  .opc-big-calendar-event-btn{
+    background-color: #782324;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    margin-top: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 15px;
+  }
+  .opc-big-calendar-event-btn:hover{
+    background-color: gold;
+    color: #782324;
+  }
+  
+.opc-big-calendar-event-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 10px; 
+    text-overflow: ellipsis; 
+    white-space: normal; 
+    overflow: hidden;
+  }
+
+.opc-big-calendar-events-content-header{
+  display: flex;
+  margin-top: -20px;
+}
+
+  .opc-big-calendar-delete-icon {
+    font-size: 20px;
+  }
+  
+  .opc-big-calendar-event-title {
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  .opc-big-calendar-event-description {
+    margin-top: 5px;
+    font-size: 15px;
+  }
+  
+  .opc-big-calendar-selected-date {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .opc-big-calendar-add-event-modal {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .opc-big-calendar-add-event-modal h3 {
+    margin-top: 0;
+  }
+  
+  .opc-big-calendar-add-event-modal input, 
+  .opc-big-calendar-add-event-modal textarea {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .opc-big-calendar-add-event-modal button {
+    margin-right: 10px;
+  }
+  
+  .opc-big-calendar-event-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .opc-big-calendar-edit-icon, 
+  .opc-big-calendar-delete-icon {
+    font-size: 24px;
+    margin-left: 10px;
+  }
+  
+  .opc-big-calendar-edit-icon:hover {
+    color: #ffcc00;
+  }
+  
+  .opc-big-calendar-delete-icon:hover {
+    color: #782324;
+  }
+  
+  .opc-big-calendar-edit-event-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    z-index: 1000;
+  }
+  
+  .opc-big-calendar-edit-event-modal h3 {
+    margin-bottom: 20px;
+  }
+  
+  .opc-big-calendar-edit-event-modal input, 
+  .opc-big-calendar-edit-event-modal textarea {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .opc-big-calendar-edit-event-modal textarea {
+    height: 100px;
+    resize: vertical;
+  }
+  
+  .opc-big-calendar-edit-event-modal button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .opc-big-calendar-edit-event-modal button:first-of-type {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .opc-big-calendar-edit-event-modal button:last-of-type {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  
+  .opc-big-calendar-edit-event-modal button:first-of-type:hover {
+    background-color: #0056b3;
+  }
+  
+  .opc-big-calendar-edit-event-modal button:last-of-type:hover {
+    background-color: #5a6268;
+  }
+
+  .opc-big-calendar-previous,
+  .opc-big-calendar-next
+  {
+    background-color: #782324;
+    color: #ffcc00;
+    padding: 15px 20px;
+    font-size: 100px;
+    font-weight: bold;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .opc-big-calendar-previous:hover,
+  .opc-big-calendar-next:hover
+  {
+    background-color: #ffcc00;
+    color: #782324;
+    border-color: none;
+  }
+
+  .event-modal-overlay{
+    position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  }
+
+  .highlighted {
+    background-color: #ffcc00; 
+  }
