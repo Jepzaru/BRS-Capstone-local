@@ -32,9 +32,9 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     const formatTime = (time) => {
         if (!time || time === "N/A") return '';
       
-        // Check if the time already contains AM or PM to avoid double-formatting
+        
         if (time.includes("AM") || time.includes("PM")) {
-          return time; // Return as-is if already formatted
+          return time; 
         }
       
         const [hours, minutes] = time.split(':');
@@ -165,6 +165,10 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
             if (response.ok) {
                 const updatedReservation = await response.json();
                 setResponseModal({ show: true, success: true, message: 'Request Resent Successfully!' });
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); 
             } else {
                 const errorBody = await response.text();
                 setResponseModal({ show: true, success: false, message: 'Failed to resend request: ' + errorBody }); 
@@ -172,8 +176,9 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         } catch (error) {
             setResponseModal({ show: true, success: false, message: 'Error during request: ' + error.message });
         }
-        console.log('Payload to send:', payload);
     };
+
+
     
     const handleCloseResponseModal = () => {
         setResponseModal({ show: false, success: null, message: '' });

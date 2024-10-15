@@ -57,14 +57,16 @@ const HeadApprovedRequests = () => {
 
   const getDisplayedRequests = () => {
     let filteredRequests = requests;
-
+  
+    filteredRequests = filteredRequests.filter(request => request.status === "Approved");
+  
     if (searchTerm.trim() !== "") {
       filteredRequests = filteredRequests.filter(request => 
         request.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.userName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
+  
     if (sortOption === "alphabetical") {
       filteredRequests.sort((a, b) => a.userName.localeCompare(b.userName));
     } else if (sortOption === "ascending") {
@@ -72,6 +74,7 @@ const HeadApprovedRequests = () => {
     } else if (sortOption === "descending") {
       filteredRequests.sort((a, b) => b.capacity - a.capacity);
     }
+  
     return filteredRequests;
   };
 
@@ -121,7 +124,8 @@ const HeadApprovedRequests = () => {
                     <th>From</th>
                     <th>To</th>
                     <th>Capacity</th>
-                    <th>Vehicle Type</th>
+                    <th>Vehicle</th>
+                    <th>Added Vehicle</th>
                     <th>Schedule</th>
                     <th>Return Schedule</th>
                     <th>Departure Time</th>
@@ -133,7 +137,7 @@ const HeadApprovedRequests = () => {
                 <tbody>
                   {getDisplayedRequests().length === 0 ? (
                     <tr>
-                      <td colSpan="12" className="no-requests">No Approved Requests Available</td>
+                      <td colSpan="13" className="no-requests">No Approved Requests Available</td>
                     </tr>
                   ) : (
                     getDisplayedRequests().map((request, index) => (
@@ -144,7 +148,18 @@ const HeadApprovedRequests = () => {
                         <td>{request.destinationFrom}</td>
                         <td>{request.destinationTo}</td>
                         <td>{request.capacity}</td>
-                        <td>{request.vehicleType}</td>
+                        <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span> </td>
+                        <td>
+                          {request.reservedVehicles.length > 0 ? (
+                            request.reservedVehicles.map((vehicle, index) => (
+                              <div key={index}>
+                               <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
+                              </div>
+                            ))
+                          ) : (
+                            <div>No Vehicles Added</div>
+                          )}
+                        </td>
                         <td>{request.schedule}</td>
                         <td>{request.returnSchedule || 'N/A'}</td>
                         <td>{request.departureTime}</td>
