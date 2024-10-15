@@ -123,20 +123,17 @@ const OpcRequests = () => {
   };
 
   const handleDriverSelect = (vehicleId, driver) => {
-    if (!driver) return; // Check for null or undefined driver
+    if (!driver) return; 
   
-    // Check if the driver is already assigned to another vehicle in the same request
     const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id && vehicle.id !== vehicleId);
   
-    // Also check if the driver is assigned to the main vehicle (if applicable)
     const isMainVehicleAssigned = selectedDriver && selectedDriver.id === driver.id;
   
     if (isDriverAssigned || isMainVehicleAssigned) {
       alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
-      return; // Prevent selection if driver is already assigned
+      return; 
     }
   
-    // Update the driver assignment for the selected vehicle
     setSelectedRequest(prevRequest => {
       const updatedVehicles = prevRequest.reservedVehicles.map(vehicle => {
         if (vehicle.id === vehicleId) {

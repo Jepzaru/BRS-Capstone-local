@@ -118,11 +118,11 @@ const HeadSide = () => {
     setSelectedRequest(null);
     setModalAction(null);
     setFeedback('');
-    setErrorMessage(''); // Reset error message when modal is closed
+    setErrorMessage('');
   };
 
   const handleViewFileError = () => {
-    setErrorMessage('No file is attached.'); // Set error message when no file is attached
+    setErrorMessage('No file is attached.'); 
   };
 
   useEffect(() => {
@@ -142,6 +142,15 @@ const HeadSide = () => {
   const splitText = (text, maxLength) => {
     const regex = new RegExp(`.{1,${maxLength}}`, 'g');
     return text.match(regex).join('\n');
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short", 
+      day: "numeric",
+    });
   };
 
   return (
@@ -215,8 +224,8 @@ const HeadSide = () => {
                           <div>No Vehicles Added</div>
                         )}
                       </td>
-                      <td>{requests.schedule}</td>
-                      <td>{requests.returnSchedule || 'N/A'}</td>
+                      <td>{requests.schedule ? formatDate(requests.schedule) : 'N/A'}</td>
+                      <td>{requests.returnSchedule && requests.returnSchedule !== "0001-01-01" ? formatDate(requests.returnSchedule) : 'N/A'}</td>
                       <td style={{width: '70px'}}>{requests.departureTime}</td>
                       <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
                       <td>{splitText(requests.reason, 15)}</td>
