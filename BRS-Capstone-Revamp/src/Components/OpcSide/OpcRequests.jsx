@@ -445,12 +445,6 @@ const OpcRequests = () => {
                               <button
                                     className="opc-approve-button"
                                     onClick={() => handleOpenModal(request, 'approve')}
-                                    disabled={updatedStatus === 'Conflict'}
-                                    style={{
-                                      opacity: updatedStatus === 'Conflict' ? 0.5 : 1,
-                                      backgroundColor: updatedStatus === 'Conflict' ? 'black' : 'green', 
-                                      cursor: updatedStatus === 'Conflict' ? 'not-allowed' : 'pointer' 
-                                    }}
                                   >
                                     <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
                                   </button>
@@ -488,7 +482,7 @@ const OpcRequests = () => {
 
       {modalAction === 'approve' ? (
         <div className="modal-driver-selection">
-          {/* Main Vehicle Driver Selection */}
+       
           <label htmlFor="driver-select">
             <FaBus style={{ color: "#782324", marginRight: "5px", marginBottom: '-2px' }} />
             Main Vehicle:
@@ -500,15 +494,14 @@ const OpcRequests = () => {
               const driverId = e.target.value;
               const driver = drivers.find(driver => String(driver.id) === String(driverId));
 
-              // Check if the driver is already assigned to another vehicle
+            
               const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id);
 
               if (isDriverAssigned) {
                 alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
-                return; // Prevent selection if driver is already assigned
+                return; 
               }
 
-              // Set the selected driver for the main vehicle
               setSelectedDriver(driver);
             }}
           >
