@@ -27,7 +27,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         reservedVehicles: [],
         ...request
     });
-
     
     const formatTime = (time) => {
         if (!time || time === "N/A") return '';
@@ -66,7 +65,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         }
     };
     
-
     useEffect(() => {
         if (request) {
             setFormData((prevData) => ({
@@ -120,7 +118,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     };
 
     const handleResendRequest = async () => {
-
         if (!formData.destinationFrom || !formData.destinationTo || !formData.capacity || !formData.reason) {
             alert('Please fill in all required fields.');
             return;
@@ -129,12 +126,14 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         try {
             let fileUrl = null;
     
+            // Check if there is a file to upload
             if (formData.approvalProof instanceof File) {
                 const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
                 const snapshot = await uploadBytes(fileRef, formData.approvalProof);
                 fileUrl = await getDownloadURL(snapshot.ref);
             }
     
+            // Use fileUrl if available, or fallback to the existing file URL
             const payload = {
                 typeOfTrip: formData.typeOfTrip,
                 destinationFrom: formData.destinationFrom,
@@ -149,7 +148,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 department: formData.department,
                 reason: formData.reason,
                 reservedVehicles: formData.reservedVehicles,
-                approvalProof: formData.approvalProof instanceof File ? fileUrl : formData.approvalProof,
+                fileUrl: fileUrl || formData.approvalProof, // Use fileUrl if new, otherwise use existing one
                 rejected: false,
             };
     
@@ -165,7 +164,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
             if (response.ok) {
                 const updatedReservation = await response.json();
                 setResponseModal({ show: true, success: true, message: 'Request Resent Successfully!' });
-
+    
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000); 
@@ -178,8 +177,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         }
     };
 
-
-    
     const handleCloseResponseModal = () => {
         setResponseModal({ show: false, success: null, message: '' });
         refreshManageRequests(); 
