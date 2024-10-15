@@ -250,7 +250,7 @@ const OpcRequests = () => {
   };
 
   const handleViewFile = (fileUrl) => {
-    if (fileUrl) {
+    if (fileUrl && fileUrl !== "No file(s) attached" && fileUrl !== 'null') {
       window.open(fileUrl, '_blank');
     } else {
       alert("No file URL available");
@@ -460,11 +460,13 @@ const OpcRequests = () => {
                                 <button className="opc-reject-button" onClick={() => handleOpenModal(request, 'reject')}>
                                   <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                                 </button>
-                                {request.fileUrl === "No file(s) attached" ? (
-                                  <button className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }}>No file attached</button>
-                                ) : (
-                                  <button onClick={() => handleViewFile(request.fileUrl)} className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }} >
+                                {request.fileUrl && request.fileUrl !== "No file(s) attached" && request.fileUrl !== 'null' ? (
+                                  <button onClick={() => handleViewFile(request.fileUrl)} className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }}>
                                     View File
+                                  </button>
+                                ) : (
+                                  <button className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }} disabled>
+                                    No file attached
                                   </button>
                                 )}
                               </div>
