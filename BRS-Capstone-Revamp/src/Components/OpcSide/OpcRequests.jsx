@@ -434,17 +434,22 @@ const OpcRequests = () => {
                                           <FaFlag style={{ color: 'red' }} />
                                       </span>
                                   ) : (
-                                      (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
-                                          request.department.trim().toLowerCase() === 'college of engineering and architecture (cea)' ||
-                                          request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
-                                          request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
-                                          request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
-                                          request.department.trim().toLowerCase() === 'college of nursing and allied health sciences (cnahs)') && (
-                                          <span className="normal-request-badge">
-                                              <FaFlag style={{ color: 'blue' }} />
-                                          </span>
-                                      )
-                                  ))
+                                    (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
+                                     request.department.trim().toLowerCase() === 'college of engineering and architecture (cea)' ||
+                                     request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
+                                     request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
+                                     request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
+                                     request.department.trim().toLowerCase() === 'college of nursing and allied health sciences (cnahs)') && (
+                                        <span className="normal-request-badge">
+                                            <FaFlag style={{ color: 'blue' }} />
+                                        </span>
+                                    )
+                                ) || (
+                                    // Default badge for any other departments
+                                    <span className="normal-request-badge">
+                                        <FaFlag style={{ color: 'blue' }} /> {/* Adjust color as needed */}
+                                    </span>
+                                ))
                               )}
                           </div>
                             </td>
