@@ -439,7 +439,7 @@ const OpcRequests = () => {
                                           request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
                                           request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
                                           request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
-                                          request.department.trim().toLowerCase() === 'college of nursing & allied health sciences (cnahs)') && (
+                                          request.department.trim().toLowerCase() === 'college of nursing and allied health sciences (cnahs)') && (
                                           <span className="normal-request-badge">
                                               <FaFlag style={{ color: 'blue' }} />
                                           </span>
