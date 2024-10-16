@@ -133,7 +133,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 fileUrl = await getDownloadURL(snapshot.ref);
             }
     
-            // Use fileUrl if available, or fallback to the existing file URL
             const payload = {
                 typeOfTrip: formData.typeOfTrip,
                 destinationFrom: formData.destinationFrom,
@@ -148,7 +147,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 department: formData.department,
                 reason: formData.reason,
                 reservedVehicles: formData.reservedVehicles,
-                fileUrl: fileUrl || formData.approvalProof, // Use fileUrl if new, otherwise use existing one
+                fileUrl: fileUrl || formData.approvalProof,
                 rejected: false,
             };
     

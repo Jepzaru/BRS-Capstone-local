@@ -43,15 +43,26 @@ const VehicleManagement = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch vehicles');
         }
+  
         const data = await response.json();
-        setVehicles(data);
+  
+        // Ensure data is an array before setting the vehicles state
+        if (Array.isArray(data)) {
+          setVehicles(data);
+        } else {
+          // Handle case where data is not an array
+          console.error('Expected an array but got:', data);
+          setVehicles([]); // Set vehicles to an empty array to avoid issues
+        }
       } catch (error) {
         console.error('Error fetching vehicles:', error);
+        setVehicles([]); // Set vehicles to an empty array in case of error
       }
     };
+  
     fetchVehicles();
   }, [token]);
-
+  
 
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
@@ -247,26 +258,25 @@ const VehicleManagement = () => {
         const errorText = await response.text();
         throw new Error('Failed to delete vehicle: ' + errorText);
       }
+      
       setSuccessMessage('Vehicle deleted successfully!');
+      
+      setVehicles(vehicles.filter(vehicle => vehicle.id !== selectedVehicleId));
+      
       closeDeleteModal();
-      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await updatedVehicles.json();
-      setVehicles(data);
+      
     } catch (error) {
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
   };
-
-  const filteredVehicles = vehicles.filter(vehicle =>
-    vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-  );  
-
   
+
+  const filteredVehicles = Array.isArray(vehicles)
+  ? vehicles.filter(vehicle =>
+      vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : [];
 
   return (
     <div className="vehiclemanage">
@@ -409,13 +419,15 @@ const VehicleManagement = () => {
                   required
                 />
                  <label htmlFor='vehicle-status'>Status</label>
-                <input
-                  type="text"
-                  placeholder="Status"
+               <select
+                  className="vehicle-input"
                   value={updateStatus}
                   onChange={(e) => setUpdateStatus(e.target.value)}
                   required
-                />
+                >
+                  <option value="Available">Available</option>
+                  <option value="Maintenance">Maintenance</option>
+                </select>
               </div>
               <div className='add-vehicle-buttons'>
                 <button className="add-vehicle-submit-btn" >Update Vehicle</button>

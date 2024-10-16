@@ -56,10 +56,10 @@ const Main = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/user-authentication" element={<Login />} />
-        <Route path="/vip-side/special-reservation" element={<VipSpecialReservation />} />
-        <Route path="/vip-side" element={<VipSide />} />
-        <Route path="/vip-settings" element={<VipSettings />} />
-        <Route path="/vip-manage-requests" element={<VipManageRequest />} />
+        <Route path="/vip-side/special-reservation" element={<ProtectedRoute path="/vip-side/special-reservation" element={<VipSpecialReservation  />} />} />
+        <Route path="/vip-side" element={<ProtectedRoute path="/vip-side" element={<VipSide />} />} />
+        <Route path="/vip-settings" element={<ProtectedRoute path="/vip-settings" element={<VipSettings />} />} />
+        <Route path="/vip-manage-requests" element={<ProtectedRoute path="/vip-manage-requests" element={<VipManageRequest />} />} />
         <Route path="/admin-authentication" element={<AdminLogin />} />
         <Route path="/admin" element={<ProtectedRoute path="/admin" element={<AdminModule />} />} />
         <Route path="/admin-department" element={<ProtectedRoute path="/admin-department" element={<AdminDepartment />} />} />

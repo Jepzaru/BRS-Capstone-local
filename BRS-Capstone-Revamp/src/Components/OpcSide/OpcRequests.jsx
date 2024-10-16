@@ -18,8 +18,10 @@ const OpcRequests = () => {
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [feedback, setFeedback] = useState('');
+  const [sortBy, setSortBy] = useState('');
 
-  const token = localStorage.getItem('token');
+  
+const token = localStorage.getItem('token');
 
   const fetchHeadIsApprovedRequests = async () => {
     try {
@@ -84,21 +86,34 @@ const OpcRequests = () => {
   };
 
   const getFilteredAndSortedRequests = () => {
-    const filteredRequests = requests.filter(request =>
-      request.reason.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    switch (sortOption) {
-      case "alphabetical":
-        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
-      case "ascending":
-        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
-      default:
-        return filteredRequests;
+    let filteredRequests = requests;
+  
+    if (searchTerm) {
+      filteredRequests = filteredRequests.filter((request) =>
+        request.reason.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
+  
+    filteredRequests.sort((a, b) => {
+      const dateA = new Date(a.schedule);
+      const dateB = new Date(b.schedule);
+  
+      return dateA - dateB;
+    });
+  
+    if (sortBy === 'alphabetical') {
+      filteredRequests.sort((a, b) =>
+        a.reason.toLowerCase() > b.reason.toLowerCase() ? 1 : -1
+      );
+    } else if (sortBy === 'ascending') {
+      filteredRequests.sort((a, b) => a.capacity - b.capacity);
+    } else if (sortBy === 'descending') {
+      filteredRequests.sort((a, b) => b.capacity - a.capacity);
+    }
+  
+    return filteredRequests;
   };
+  
 
   const handleOpenModal = (request, action) => {
     setSelectedRequest({
@@ -146,9 +161,7 @@ const OpcRequests = () => {
     });
   };
   
-  
-  
-  
+
 
   const handleReject = async () => {
     if (!feedback.trim()) {
@@ -283,6 +296,10 @@ const OpcRequests = () => {
     });
   };
 
+  const allVehiclesHaveDrivers = () => {
+    return selectedRequest?.reservedVehicles.every(vehicle => vehicle.driverId);
+  };
+
   return (
     <div className="opcrequest">
       <Header />
@@ -390,9 +407,9 @@ const OpcRequests = () => {
                         <tr
                           key={index}
                           className={`
-                            ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''} 
-                            ${request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' : ''} 
-                            ${hasVehicleConflict ? 'highlight-vehicle-conflict' : ''}
+                            ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''}
+                             ${request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' : ''}
+                             ${hasVehicleConflict ? 'highlight-vehicle-conflict' : ''}
                           `}
                         >
                             <td>{request.transactionId}</td>
@@ -445,9 +462,9 @@ const OpcRequests = () => {
                                         </span>
                                     )
                                 ) || (
-                                    // Default badge for any other departments
+                                    
                                     <span className="normal-request-badge">
-                                        <FaFlag style={{ color: 'blue' }} /> {/* Adjust color as needed */}
+                                        <FaFlag style={{ color: 'blue' }} /> 
                                     </span>
                                 ))
                               )}
@@ -518,7 +535,7 @@ const OpcRequests = () => {
               setSelectedDriver(driver);
             }}
           >
-            <option value="">Select Driver</option>
+            <option value="" disabled selected>Select Driver</option>
             {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
               .map(driver => (
                 <option key={driver.id} value={driver.id}>
@@ -576,13 +593,14 @@ const OpcRequests = () => {
           )}
 
           <div className="modal-buttons">
-            <button
+          <button
               className="modal-accept-button"
               onClick={modalAction === 'approve' ? handleApprove : handleReject}
-              disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
+              disabled={modalAction === 'approve' ? !allVehiclesHaveDrivers() : !feedback.trim()}
             >
               {modalAction === 'approve' ? 'Approve' : 'Reject'}
             </button>
+
             <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
           </div>
         </div>
