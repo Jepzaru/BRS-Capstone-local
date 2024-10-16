@@ -65,7 +65,6 @@ const Main = () => {
         <Route path="/admin-department" element={<ProtectedRoute path="/admin-department" element={<AdminDepartment />} />} />
         <Route path="/user-side" element={<ProtectedRoute path="/user-side" element={<UserSide />} />} />
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
-        {/* <Route path="/user-side/special-reservation" element={<ProtectedRoute path="/user-side/special-reservation" element={<SpecialReservation />} />} /> */}
         <Route path="/manage-requests" element={<ProtectedRoute path="/manage-requests" element={<ManageRequests />} />} />
         <Route path="/opc-bigcalendar" element={<ProtectedRoute path="/opc-bigcalendar" element={<OpcBigCalendar />} />} />
         <Route path="/settings" element={<ProtectedRoute path="/settings" element={<Settings />} />} />
