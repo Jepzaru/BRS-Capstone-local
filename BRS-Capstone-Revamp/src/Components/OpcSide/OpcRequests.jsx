@@ -390,8 +390,9 @@ const OpcRequests = () => {
                         <tr
                           key={index}
                           className={`
-                            ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''}
-                             ${hasVehicleConflict ? 'highlight-vehicle-conflict' : ''}
+                            ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''} 
+                            ${request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' : ''} 
+                            ${hasVehicleConflict ? 'highlight-vehicle-conflict' : ''}
                           `}
                         >
                             <td>{request.transactionId}</td>
@@ -423,21 +424,28 @@ const OpcRequests = () => {
                             <span className={statusClass}>
                               {updatedStatus}
                               </span>
-                            {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
-                              <span className="vip-request-badge">
-                                <FaFlag style={{ color: 'red'}} /></span>
-                            ) : (
-                              (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
-                                request.department.trim().toLowerCase() === 'college of engineering and architecture (cae)' ||
-                                request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
-                                request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
-                                request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
-                                request.department.trim().toLowerCase() === 'college of nursing & allied health sciences') && (
-                                <span className="normal-request-badge">
-                                  <FaFlag style={{ color: 'blue'}} />
-                                </span>
-                              )
-                            )}
+                              {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
+                                  <span className="vip-request-badge">
+                                      <FaFlag style={{ color: 'red' }} />
+                                  </span>
+                              ) : (
+                                  (request.department.trim().toLowerCase() === 'office of the vice-president (vip)' ? (
+                                      <span className="vip-request-badge">
+                                          <FaFlag style={{ color: 'red' }} />
+                                      </span>
+                                  ) : (
+                                      (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
+                                          request.department.trim().toLowerCase() === 'college of engineering and architecture (cea)' ||
+                                          request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
+                                          request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
+                                          request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
+                                          request.department.trim().toLowerCase() === 'college of nursing & allied health sciences (cnahs)') && (
+                                          <span className="normal-request-badge">
+                                              <FaFlag style={{ color: 'blue' }} />
+                                          </span>
+                                      )
+                                  ))
+                              )}
                           </div>
                             </td>
                             <td>

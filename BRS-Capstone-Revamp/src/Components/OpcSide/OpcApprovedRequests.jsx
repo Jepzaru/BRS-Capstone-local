@@ -194,9 +194,10 @@ const OpcApprovedRequests = () => {
                       className={
                         selectedRows.has(request.transactionId) ? 'selected-row' :
                         request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                        request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
                         request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
                         'default-highlight'
-                      }
+                    }
                     >
                         {confirmMode && (
                           <td>
