@@ -4,12 +4,12 @@ import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown, FaPhoneAlt, FaCalendarDay, FaCalendarMinus } from "react-icons/fa";
-import { BsPersonFillAdd } from "react-icons/bs";
-import { PiSteeringWheelFill } from "react-icons/pi";
+import { BsPersonFillAdd, BsFillPersonFill } from "react-icons/bs";
+import { PiSteeringWheelFill} from "react-icons/pi";
 import { IoIosCloseCircle, IoMdPerson } from "react-icons/io";
 import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { RiAlarmWarningFill } from "react-icons/ri";
+import { RiAlarmWarningFill, RiReservedFill } from "react-icons/ri";
 import '../../CSS/OpcCss/DriverManagement.css';
 
 const getCurrentDate = () => {
@@ -224,6 +224,7 @@ const DriverManagement = () => {
               <button className='add-driver-btn' onClick={openModal}><BsPersonFillAdd style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Driver</button>
             </div>
           </div>
+          <div class="driver-management-wrapper">
           <div className='driver-list-container'>
             <table className="driver-table">
               <thead>
@@ -257,10 +258,10 @@ const DriverManagement = () => {
                       <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
                       <td>{driver.leaveEndDate ?formatDate(driver.leaveEndDate) : 'N/A'}</td>
                       <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(driver)}>
+                        <button className="driver-update-button" onClick={() => openUpdateModal(driver)}>
                           <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update
                         </button>
-                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}>
+                        <button className="driver-delete-button" onClick={() => openDeleteModal(driver.id)}>
                           <FaRegTrashAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Delete
                         </button>
                       </td>
@@ -270,6 +271,34 @@ const DriverManagement = () => {
               </tbody>
             </table>
           </div>
+            <div class="driver-reservations">
+              <div className="driver-schedlist">
+                <h3><RiReservedFill style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Driver Reservations</h3>
+
+                <BsFillPersonFill style={{color: "#782324", marginLeft: "130px", marginBottom: "-2px"}}/><select className="reservation-filter">
+                <option value="all" disabled>Filter by Driver</option>
+                <option value="upcoming">John</option>
+                <option value="completed">Peter</option>
+              </select>
+              </div>
+            <table className="driver-table">
+              <thead>
+                <tr>
+                  <th> Vehicle</th>
+                  <th> Schedule</th>
+                  <th> Return Schedule</th>
+                  <th> Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+              </tbody>
+            </table>
+              
+            </div>
+
+          </div>
+
           <img src={logoImage1} alt="Logo" className="driver-logo-image" />
         </div>
       </div>

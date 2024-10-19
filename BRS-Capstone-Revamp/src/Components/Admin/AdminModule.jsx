@@ -131,6 +131,28 @@ const closeErrorModal = () => {
     }
 };
 
+const handleDeleteAccount = async () => {
+  if (!userToDelete) return;
+
+  try {
+    const response = await fetch(`http://localhost:8080/admin/users/delete/${userToDelete.id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      fetchUsers();
+      closeDeleteModal();
+    } else {
+      openErrorModal("Failed to delete the user.");
+    }
+  } catch (error) {
+    openErrorModal("An error occurred while deleting the user.");
+  }
+};
+
 
 const handleUpdateAccount = async (event) => {
   event.preventDefault();

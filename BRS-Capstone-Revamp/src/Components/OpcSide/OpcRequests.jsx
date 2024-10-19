@@ -368,35 +368,71 @@ const token = localStorage.getItem('token');
                   ) : (
                     getFilteredAndSortedRequests().map((request, index) => {
         
-                      const isDuplicateSchedule = getFilteredAndSortedRequests().some(otherRequest => 
-                        otherRequest.schedule === request.schedule &&
-                        otherRequest.vehicleType === request.vehicleType &&
-                        otherRequest.plateNumber === request.plateNumber &&
-                        otherRequest.id !== request.id
+                      const parseTimeToDate = (timeString) => {
+                        const date = new Date(); 
+                        const [time, modifier] = timeString.split(' '); 
+                        const [hours, minutes] = time.split(':').map(Number); 
+                        let hoursAdjusted = hours;
+                        
+                        
+                        if (modifier === 'PM' && hours < 12) {
+                            hoursAdjusted += 12;
+                        } else if (modifier === 'AM' && hours === 12) {
+                            hoursAdjusted = 0;
+                        }
+                        
+                        date.setHours(hoursAdjusted, minutes, 0, 0); 
+                        return date;
+                    };
+                    
+                    
+                    const isTimeConflict = (requestTime, otherRequestTime) => {
+                        const requestDate = parseTimeToDate(requestTime);
+                        const otherRequestDate = parseTimeToDate(otherRequestTime);
+                        
+                        
+                        const twoHoursInMillis = 2 * 60 * 60 * 1000;
+                        const startBuffer = new Date(requestDate.getTime() - twoHoursInMillis);
+                        const endBuffer = new Date(requestDate.getTime() + twoHoursInMillis);
+                        
+                        return otherRequestDate >= startBuffer && otherRequestDate <= endBuffer;
+                    };
+                    
+                    const requests = getFilteredAndSortedRequests();
+                    
+                    const isDuplicateSchedule = requests.some(otherRequest => 
+                      otherRequest.schedule === request.schedule &&
+                      otherRequest.vehicleType === request.vehicleType &&
+                      otherRequest.plateNumber === request.plateNumber &&
+                      isTimeConflict(otherRequest.departureTime, request.departureTime) && 
+                      otherRequest.id !== request.id
                     );
                     
                     const isReturnScheduleValid = request.returnSchedule !== null;
-                    const isDuplicateReturnSchedule = isReturnScheduleValid && getFilteredAndSortedRequests().some(otherRequest => 
-                        otherRequest.returnSchedule === request.returnSchedule &&
-                        otherRequest.vehicleType === request.vehicleType &&
-                        otherRequest.plateNumber === request.plateNumber &&
-                        otherRequest.id !== request.id
+                    const isDuplicateReturnSchedule = isReturnScheduleValid && requests.some(otherRequest => 
+                      otherRequest.returnSchedule === request.returnSchedule &&
+                      otherRequest.vehicleType === request.vehicleType &&
+                      otherRequest.plateNumber === request.plateNumber &&
+                      isTimeConflict(otherRequest.pickUpTime, request.pickUpTime) && 
+                      otherRequest.id !== request.id
                     );
-                  
-                    const hasVehicleConflict = getFilteredAndSortedRequests().some(otherRequest => {
-                        if (otherRequest.id !== request.id) {
-                            const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
-                                otherRequest.vehicleType === request.vehicleType && 
-                                otherRequest.plateNumber === request.plateNumber;
                     
-                            const isReturnScheduleConflict = isReturnScheduleValid && otherRequest.returnSchedule !== null && 
-                                otherRequest.returnSchedule === request.returnSchedule &&
-                                otherRequest.vehicleType === request.vehicleType &&
-                                otherRequest.plateNumber === request.plateNumber;
+                    const hasVehicleConflict = requests.some(otherRequest => {
+                      if (otherRequest.id !== request.id) {
+                        const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
+                          otherRequest.vehicleType === request.vehicleType && 
+                          otherRequest.plateNumber === request.plateNumber &&
+                          isTimeConflict(otherRequest.departureTime, request.departureTime); 
                     
-                            return isMainScheduleConflict || isReturnScheduleConflict;
-                        }
-                        return false;
+                        const isReturnScheduleConflict = isReturnScheduleValid && otherRequest.returnSchedule !== null && 
+                          otherRequest.returnSchedule === request.returnSchedule &&
+                          otherRequest.vehicleType === request.vehicleType &&
+                          otherRequest.plateNumber === request.plateNumber &&
+                          isTimeConflict(otherRequest.pickUpTime, request.pickUpTime); 
+                    
+                        return isMainScheduleConflict || isReturnScheduleConflict;
+                      }
+                      return false;
                     });
                     
                     const isConflict = hasVehicleConflict || isDuplicateSchedule || isDuplicateReturnSchedule;
@@ -475,6 +511,12 @@ const token = localStorage.getItem('token');
                               <button
                                     className="opc-approve-button"
                                     onClick={() => handleOpenModal(request, 'approve')}
+                                    disabled={updatedStatus === 'Conflict'}
+                                    style={{
+                                      opacity: updatedStatus === 'Conflict' ? 0.5 : 1,
+                                      backgroundColor: updatedStatus === 'Conflict' ? 'black' : 'green', 
+                                      cursor: updatedStatus === 'Conflict' ? 'not-allowed' : 'pointer' 
+                                    }}
                                   >
                                     <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
                                   </button>
