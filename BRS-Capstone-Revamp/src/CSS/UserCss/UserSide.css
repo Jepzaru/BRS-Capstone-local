@@ -49,7 +49,7 @@ body {
   border-radius: 10px;
   padding: 10px;
   height: 650px;
-  width: 400px;
+  width: 480px;
   z-index: 999;
   position: relative;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
@@ -58,19 +58,20 @@ body {
   padding: 20px;
   background-color: #f4f4f4; 
   border-radius: 8px;
+  margin-top: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .events-label {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #333;
 }
 
 .events-list {
-  margin-top: 20px;
+  margin-top: 10px;
   background-color: #f4f4f4;
-  height: 550px;
+  height: 160px;
   border-radius: 8px;
   overflow-y: auto;
 }

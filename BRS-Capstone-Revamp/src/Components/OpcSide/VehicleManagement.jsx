@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
-import { FaBus, FaRegTrashAlt, FaSortAlphaDown } from "react-icons/fa";
+import { FaBus, FaRegTrashAlt, FaSortAlphaDown, FaTools } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { MdAddCircle } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
@@ -139,15 +139,15 @@ const VehicleManagement = () => {
   };
 
   const handleAddVehicle = async (e) => {
-    e.preventDefault(); // Prevent form submission reload
+    e.preventDefault(); 
     
-    // Validate plate number format first
+
     if (!validatePlateNumber(plateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
   
-    // Fetch all vehicles to check if the plate number exists
+    
     try {
       const response = await fetch('http://localhost:8080/vehicle/getAll', {
         headers: { 'Authorization': `Bearer ${token}` },
@@ -157,14 +157,14 @@ const VehicleManagement = () => {
       }
       const data = await response.json();
   
-      // Check if the plate number already exists in the fetched vehicles
+      
       const existingVehicle = data.find(vehicle => vehicle.plateNumber === plateNumber);
       if (existingVehicle) {
         setErrorMessage(`A vehicle with plate number ${plateNumber} already exists.`);
-        return; // Stop execution here to prevent modal closing
+        return; 
       }
   
-      // If plate number is unique, proceed to add the new vehicle
+     
       const vehicleData = { vehicleType, plateNumber, capacity: Number(capacity) };
       const addResponse = await fetch('http://localhost:8080/opc/vehicle/post', {
         method: 'POST',
@@ -304,6 +304,7 @@ const VehicleManagement = () => {
               <button className='add-vehicle-btn' onClick={openAddModal}><MdAddCircle style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Vehicle</button>
             </div>
           </div>
+          <div class="vehicle-management-wrapper">
           <div className='vehicle-list-container'>
             <table className="vehicle-table">
               <thead>
@@ -338,6 +339,33 @@ const VehicleManagement = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div class="vehicle-reservations">
+              <div className="vehicle-schedlist">
+                <h3><FaTools style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle Maintainance</h3>
+
+                <FaBus style={{color: "#782324", marginLeft: "90px", marginBottom: "-2px"}}/><select className="reservation-filter">
+                <option value="all" disabled>Filter by Vehicle</option>
+                <option value="upcoming">Bus</option>
+                <option value="completed">Coaster</option>
+              </select>
+              </div>
+            <table className="driver-table">
+              <thead>
+                <tr>
+                  <th> Vehicle</th>
+                  <th> Start</th>
+                  <th> End</th>
+                  <th> Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+              </tbody>
+            </table>
+              
+            </div>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
