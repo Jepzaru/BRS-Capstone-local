@@ -256,7 +256,7 @@ const OpcBigCalendar = () => {
           dayEvents.map((event, index) => (
             <div key={index} className="opc-big-calendar-event-item">
               <div className="opc-big-calendar-event-details">
-                <div className="opc-big-calendar-event-title">🚩 {event.eventTitle}</div>
+                <div className="opc-big-calendar-event-title">📅  {event.eventTitle}</div>
                 <div className="opc-big-calendar-event-description">
                   {event.eventDescription}
                 </div>
@@ -293,6 +293,7 @@ const OpcBigCalendar = () => {
                     <p><strong>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
                     <p><strong>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
                     <p><strong>Reason:</strong> {res.reason}</p>
+                    <p><strong>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
                   </div>
                 </div>
               </div>
@@ -305,6 +306,7 @@ const OpcBigCalendar = () => {
                     <p><strong>Date:</strong> {new Date(res.returnSchedule).toLocaleDateString()}</p>
                     <p><strong>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
                     <p><strong>Reason:</strong> {res.reason}</p>
+                    <p><strong>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
                   </div>
                 </div>
               </div>

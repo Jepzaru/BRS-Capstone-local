@@ -7,7 +7,6 @@ import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import * as XLSX from 'xlsx'; 
-import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
@@ -117,10 +116,6 @@ const OpcApprovedRequests = () => {
     setConfirmMode(false);
   };
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
   return (
     <div className="opcrequest">
       <Header />
@@ -191,66 +186,72 @@ const OpcApprovedRequests = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {requests.length === 0 ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
+                      <td colSpan="15" className="loading-conatainer"></td>
                     </tr>
                   ) : (
-                    sortedRequests.map((request, index) => (
-                      <tr
-                      key={index}
-                      className={
-                        selectedRows.has(request.transactionId) ? 'selected-row' :
-                        request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
-                        request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
-                        request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
-                        'default-highlight'
-                    }
-                    >
-                        {confirmMode && (
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedRows.has(request.transactionId)}
-                              onChange={() => handleRowSelection(request.transactionId)}
-                            />
-                          </td>
-                        )}
-                        <td>{request.transactionId}</td>
-                        <td>{request.userName}</td>
-                        <td>{request.typeOfTrip}</td>
-                        <td>{request.destinationFrom}</td>
-                        <td>{request.destinationTo}</td>
-                        <td>{request.capacity}</td>
-                        <td>{request.vehicleType} - {request.plateNumber} </td>
-                      <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
-                          ))
-                        ) : (
-                          "No Vehicles Added"
-                        )}
-                      </td>
-                      <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
-                      <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
-                        <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime || "N/A"}</td>
-                        <td>{request.driverName || "N/A"}</td>
-                        <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              - {vehicle.driverName || 'N/A'}
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Drivers Added</div>
-                        )}
-                      </td>
-                        <td>{request.reason}</td>
+                    requests.length === 0 ? (
+                      <tr>
+                        <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
                       </tr>
-                    ))
+                    ) : (
+                      sortedRequests.map((request, index) => (
+                        <tr
+                        key={index}
+                        className={
+                          selectedRows.has(request.transactionId) ? 'selected-row' :
+                          request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                          request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
+                          request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
+                          'default-highlight'
+                      }
+                      >
+                          {confirmMode && (
+                            <td>
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.has(request.transactionId)}
+                                onChange={() => handleRowSelection(request.transactionId)}
+                              />
+                            </td>
+                          )}
+                          <td>{request.transactionId}</td>
+                          <td>{request.userName}</td>
+                          <td>{request.typeOfTrip}</td>
+                          <td>{request.destinationFrom}</td>
+                          <td>{request.destinationTo}</td>
+                          <td>{request.capacity}</td>
+                          <td>{request.vehicleType} - {request.plateNumber} </td>
+                        <td>
+                          {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                            request.reservedVehicles.map((vehicle, index) => (
+                              <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
+                            ))
+                          ) : (
+                            "No Vehicles Added"
+                          )}
+                        </td>
+                        <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
+                        <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
+                          <td>{request.departureTime}</td>
+                          <td>{request.pickUpTime || "N/A"}</td>
+                          <td>{request.driverName || "N/A"}</td>
+                          <td>
+                          {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                            request.reservedVehicles.map((vehicle, index) => (
+                              <div key={index}>
+                                - {vehicle.driverName || 'N/A'}
+                              </div>
+                            ))
+                          ) : (
+                            <div>No Drivers Added</div>
+                          )}
+                        </td>
+                          <td>{request.reason}</td>
+                        </tr>
+                      ))
+                    )
                   )}
                 </tbody>
               </table>

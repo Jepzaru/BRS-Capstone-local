@@ -133,6 +133,9 @@ const Login = () => {
               {passwordVisible ? <FaEyeSlash style={{ marginRight: "5px", marginTop: "8px" }} /> : <FaEye style={{ marginRight: "5px", marginTop: "8px" }} />}
             </span>
           </div>
+          <p className="forgot-password">
+          <Link to="/forgot-password">Forgot Password?</Link>
+        </p>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
           <p className='admin-path'>

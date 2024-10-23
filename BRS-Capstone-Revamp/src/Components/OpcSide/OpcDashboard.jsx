@@ -10,7 +10,7 @@ import { GiCarSeat } from "react-icons/gi";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import '../../CSS/OpcCss/OpcDashboard.css';
-import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
+import LoadingScreen from '../../Components/UserSide/LoadingScreen';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -18,7 +18,7 @@ const useCounter = (target, duration, startCounting) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!startCounting) return; 
+    if (!startCounting) return;
     const stepTime = Math.abs(Math.floor(duration / target));
     const timer = setInterval(() => {
       setCount((prevCount) => {
@@ -29,7 +29,7 @@ const useCounter = (target, duration, startCounting) => {
         return newCount;
       });
     }, stepTime);
-    
+
     return () => clearInterval(timer);
   }, [target, duration, startCounting]);
 
@@ -45,6 +45,8 @@ const OpcDashboard = () => {
   const requestCount = useCounter(requests.length, 1000, startCounting);
   const driverCount = useCounter(drivers.length, 1000, startCounting);
   const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
   const token = localStorage.getItem('token');
 
@@ -52,7 +54,7 @@ const OpcDashboard = () => {
     const fetchNumberOfDrivers = async () => {
       try {
         const response = await fetch("http://localhost:8080/opc/driver/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
+          headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
         setDrivers(data);
@@ -63,11 +65,19 @@ const OpcDashboard = () => {
     fetchNumberOfDrivers();
   }, [token]);
 
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
+
   useEffect(() => {
     const fetchNumberOfVehicles = async () => {
       try {
         const response = await fetch("http://localhost:8080/vehicle/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
+          headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
         setVehicles(data);
@@ -82,7 +92,7 @@ const OpcDashboard = () => {
     const fetchNumbersOfRequests = async () => {
       try {
         const response = await fetch("http://localhost:8080/reservations/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
+          headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
         setRequests(data);
@@ -96,7 +106,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      setStartCounting(true); 
+      setStartCounting(true);
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -106,11 +116,7 @@ const OpcDashboard = () => {
     const counts = {};
     reservations.forEach(request => {
       const department = request.department;
-      if (counts[department]) {
-        counts[department]++;
-      } else {
-        counts[department] = 1;
-      }
+      counts[department] = (counts[department] || 0) + 1;
     });
     return counts;
   };
@@ -123,14 +129,21 @@ const OpcDashboard = () => {
     'College of Nursing and Allied Health Sciences': 'CNAHS',
     'College of Criminal Justice': 'CCJ',
   };
+
   
-  const reservationCounts = countReservationsPerDepartment(requests);
-  
-  
+  const filteredReservations = requests.filter((request) => {
+    const reservationDate = new Date(request.date);
+    const reservationMonth = reservationDate.getMonth() + 1; 
+    const reservationYear = reservationDate.getFullYear(); 
+
+    return (month ? reservationMonth === Number(month) : true) && (year ? reservationYear === Number(year) : true);
+  });
+
+  const reservationCounts = countReservationsPerDepartment(filteredReservations);
   const labels = Object.keys(reservationCounts).map(department => departmentAcronyms[department] || department);
-  
+
   const data = {
-    labels: labels,  
+    labels: labels,
     datasets: [
       {
         label: 'Number of Reservations per Department',
@@ -139,12 +152,12 @@ const OpcDashboard = () => {
       },
     ],
   };
-  
+
   const options = {
     scales: {
       x: {
         ticks: {
-          display: false,  
+          display: false,
         },
       },
       y: {
@@ -163,7 +176,7 @@ const OpcDashboard = () => {
           generateLabels: (chart) => {
             const datasets = chart.data.datasets;
             return datasets[0].backgroundColor.map((color, index) => ({
-              text: chart.data.labels[index], 
+              text: chart.data.labels[index],
               fillStyle: color,
               strokeStyle: color,
               lineWidth: 1,
@@ -194,7 +207,7 @@ const OpcDashboard = () => {
                       <FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Requests
                     </h3>
-                    <span className="number-badge">{requestCount}</span> 
+                    <span className="number-badge">{requestCount}</span>
                   </div>
                   <div className="dashcontainer2">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
@@ -208,7 +221,7 @@ const OpcDashboard = () => {
                       <FaBus style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Vehicles
                     </h3>
-                    <span className="number-badge">{vehicleCount}</span> 
+                    <span className="number-badge">{vehicleCount}</span>
                   </div>
                 </div>
                 <div className="calendar-container">
@@ -216,8 +229,38 @@ const OpcDashboard = () => {
                 </div>
               </div>
               <div className="full-width-container">
-                <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Usage Per Department</h3>
-                <Bar data={data} options={options} />
+                <div className="container-header">
+                  <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Usage Per Department</h3>
+                  <div className="filter-container">
+                    <label>Month: </label>
+                    <select value={month} onChange={handleMonthChange}>
+                      <option value="">Select Month</option>
+                      <option value="1">January</option>
+                      <option value="2">February</option>
+                      <option value="3">March</option>
+                      <option value="4">April</option>
+                      <option value="5">May</option>
+                      <option value="6">June</option>
+                      <option value="7">July</option>
+                      <option value="8">August</option>
+                      <option value="9">September</option>
+                      <option value="10">October</option>
+                      <option value="11">November</option>
+                      <option value="12">December</option>
+                    </select>
+
+                    <label style={{ marginLeft: '10px' }}>Year: </label>
+                    <select value={year} onChange={handleYearChange}>
+                      <option value="">Select Year</option>
+                      <option value="2022">2022</option>
+                      <option value="2023">2023</option>
+                      <option value="2024">2024</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="bar-chart-container">
+                  <Bar data={data} options={options} />
+                </div>
               </div>
             </div>
           </div>
