@@ -70,6 +70,8 @@ const UserSide = () => {
     fetchEvents();
   }, [token]);
 
+  const futureEvents = events.filter(event => new Date(event.eventDate) > new Date());
+
   const getVehicleImage = (vehicleType) => {
     const lowerCaseType = vehicleType.toLowerCase();
     if (/bus/.test(lowerCaseType)) {
@@ -171,15 +173,19 @@ const UserSide = () => {
                     <label className="events-label">📣 Events and Updates</label>
                   </div>
                   <div className="events-list">
-                    {events.length > 0 ? (
-                      events.map((event, index) => (
+                    {futureEvents.length > 0 ? (
+                      futureEvents.map((event, index) => (
                         <div key={index} className="event-item">
+                          <div className='item-container'>
+                          <div className='evnt-title'>
                           <p><span style={{fontWeight: "700"}}>
                           📌 Event Title:</span> {event.eventTitle}</p>
+                          </div>
                           <p>
                           📅<span style={{fontWeight: "700"}}> Date:</span> {new Date(event.eventDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                           <p>📜<span style={{fontWeight: "700"}}> Description:</span> {event.eventDescription}</p>
+                        </div>
                         </div>
                       ))
                     ) : (

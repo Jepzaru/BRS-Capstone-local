@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/OpcCss/OpcBigCalendar.css'; 
 import SideNavbar from './OpcNavbar';
-import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
+import { BiSolidRightArrow, BiSolidLeftArrow, BiSolidMessageAltDetail } from "react-icons/bi";
 import Header from '../../Components/UserSide/Header';
 import { MdEvent, MdDelete, MdEdit } from 'react-icons/md';
 import { IoMdAddCircle } from "react-icons/io";
+import { IoTime } from "react-icons/io5";
+import { FaCalendarDay, FaBus } from "react-icons/fa";
 
 const OpcBigCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -258,7 +260,7 @@ const OpcBigCalendar = () => {
               <div className="opc-big-calendar-event-details">
                 <div className="opc-big-calendar-event-title">📅  {event.eventTitle}</div>
                 <div className="opc-big-calendar-event-description">
-                  {event.eventDescription}
+                  <span style={{fontWeight: "600"}}>Description:</span> {event.eventDescription}
                 </div>
               </div>
               <div className="opc-big-calendar-event-actions">
@@ -288,12 +290,12 @@ const OpcBigCalendar = () => {
             {dayApprovedReservations.map((res, index) => (
               <div key={index} className="opc-big-calendar-event-item">
                 <div className="opc-big-calendar-event-details">
-                  <div className="opc-big-calendar-event-title">🚩 {res.reason} (Departure)</div>
-                  <div className="opc-big-calendar-event-description">
-                    <p><strong>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
-                    <p><strong>Reason:</strong> {res.reason}</p>
-                    <p><strong>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
+                  <div className="opc-big-calendar-event-title1">🚩 {res.reason} (Departure)</div>
+                  <div className="opc-big-calendar-event-description1">
+                    <p><strong><FaCalendarDay style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
+                    <p><strong><IoTime style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
+                    <p><strong><BiSolidMessageAltDetail style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Reason:</strong> {res.reason}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
                   </div>
                 </div>
               </div>
@@ -301,12 +303,12 @@ const OpcBigCalendar = () => {
             {dayApprovedReturn.map((res, index) => (
               <div key={index} className="opc-big-calendar-event-item">
                 <div className="opc-big-calendar-event-details">
-                  <div className="opc-big-calendar-event-title">🚩 {res.reason} (Pick Up)</div>
-                  <div className="opc-big-calendar-event-description">
-                    <p><strong>Date:</strong> {new Date(res.returnSchedule).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
-                    <p><strong>Reason:</strong> {res.reason}</p>
-                    <p><strong>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
+                  <div className="opc-big-calendar-event-title1">🚩 {res.reason} (Pick Up)</div>
+                  <div className="opc-big-calendar-event-description1">
+                    <p><strong><FaCalendarDay style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Date:</strong> {new Date(res.returnSchedule).toLocaleDateString()}</p>
+                    <p><strong><IoTime style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
+                    <p><strong><BiSolidMessageAltDetail style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Reason:</strong> {res.reason}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
                   </div>
                 </div>
               </div>
