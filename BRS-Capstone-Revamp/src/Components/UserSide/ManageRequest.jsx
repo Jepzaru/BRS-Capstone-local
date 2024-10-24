@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import '../../CSS/UserCss/ManageRequest.css';
@@ -32,14 +32,6 @@ const ManageRequest = () => {
     }
   };
 
-  const updateRequest = async (updatedRequest) => {
-    setRequests(prevRequests => 
-        prevRequests.map(request => 
-            request.id === updatedRequest.id ? updatedRequest : request
-        )
-    );  
-  };
-
   useEffect(() => {
     fetchUsersRequests();
   }, [token, username]);
@@ -68,9 +60,13 @@ const ManageRequest = () => {
     }
   };
 
-  const sortedRequests = sortRequests(requests);
-  const filteredRequests = sortedRequests.filter(request =>
-    (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
+  const sortedRequests = useMemo(() => sortRequests(requests), [requests, sortOption]);
+
+  const filteredRequests = useMemo(() => 
+    sortedRequests.filter(request =>
+      (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    [sortedRequests, searchTerm]
   );
 
   const getApprovalStatus = (request) => {

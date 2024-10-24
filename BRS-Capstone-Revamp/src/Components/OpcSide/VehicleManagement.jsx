@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -40,33 +40,25 @@ const VehicleManagement = () => {
         const response = await fetch('http://localhost:8080/vehicle/getAll', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch vehicles');
-        }
-  
+        if (!response.ok) throw new Error('Failed to fetch vehicles');
         const data = await response.json();
-  
-        // Ensure data is an array before setting the vehicles state
-        if (Array.isArray(data)) {
-          setVehicles(data);
-        } else {
-          // Handle case where data is not an array
+        if (Array.isArray(data)) setVehicles(data);
+        else {
           console.error('Expected an array but got:', data);
-          setVehicles([]); // Set vehicles to an empty array to avoid issues
+          setVehicles([]);
         }
       } catch (error) {
         console.error('Error fetching vehicles:', error);
-        setVehicles([]); // Set vehicles to an empty array in case of error
+        setVehicles([]);
       }
     };
-  
+
     fetchVehicles();
   }, [token]);
-  
 
-  const handleSortChange = (event) => {
+  const handleSortChange = useCallback((event) => {
     setSortOption(event.target.value);
-  };
+  }, []);
 
   useEffect(() => {
     if (successMessage || errorMessage) {
@@ -91,19 +83,19 @@ const VehicleManagement = () => {
     }
   }, [successMessage, isAddModalOpen, isUpdateModalOpen, isDeleteModalOpen]);
 
-  const openAddModal = () => {
+  const openAddModal = useCallback(() => {
     setIsAddModalOpen(true);
     setIsClosing(false);
-  };
+  }, []);
 
-  const closeAddModal = () => {
+  const closeAddModal = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
       setIsAddModalOpen(false);
     }, 300);
-  };
+  }, []);
 
-  const openUpdateModal = (vehicle) => {
+  const openUpdateModal = useCallback((vehicle) => {
     if (!vehicle) {
       console.error('Vehicle object is missing');
       return;
@@ -115,24 +107,24 @@ const VehicleManagement = () => {
     setSelectedVehicleId(vehicle.id);
     setIsUpdateModalOpen(true);
     setIsClosing(false);
-  };  
-  
-  const closeUpdateModal = () => {
+  }, []);
+
+  const closeUpdateModal = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
       setIsUpdateModalOpen(false);
     }, 300);
-  };
+  }, []);
 
-  const openDeleteModal = (vehicleId) => {
+  const openDeleteModal = useCallback((vehicleId) => {
     setSelectedVehicleId(vehicleId);
     setIsDeleteModalOpen(true);
-  };
+  }, []);
 
-  const closeDeleteModal = () => {
+  const closeDeleteModal = useCallback(() => {
     setIsDeleteModalOpen(false);
     setSelectedVehicleId(null);
-  };
+  }, []);
 
   const validatePlateNumber = (plateNumber) => {
     return plateNumberPattern.test(plateNumber);
@@ -140,31 +132,23 @@ const VehicleManagement = () => {
 
   const handleAddVehicle = async (e) => {
     e.preventDefault(); 
-    
-
     if (!validatePlateNumber(plateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
-  
     
     try {
       const response = await fetch('http://localhost:8080/vehicle/getAll', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch vehicles');
-      }
+      if (!response.ok) throw new Error('Failed to fetch vehicles');
       const data = await response.json();
-  
-      
       const existingVehicle = data.find(vehicle => vehicle.plateNumber === plateNumber);
       if (existingVehicle) {
         setErrorMessage(`A vehicle with plate number ${plateNumber} already exists.`);
         return; 
       }
   
-     
       const vehicleData = { vehicleType, plateNumber, capacity: Number(capacity) };
       const addResponse = await fetch('http://localhost:8080/opc/vehicle/post', {
         method: 'POST',
@@ -181,21 +165,18 @@ const VehicleManagement = () => {
       }
   
       const newVehicle = await addResponse.json();
-      setVehicles([newVehicle, ...vehicles]);
+      setVehicles((prevVehicles) => [newVehicle, ...prevVehicles]);
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');
       setPlateNumber('');
       setCapacity('');
-  
-     
       closeAddModal();
   
     } catch (error) {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
-  
-  
+
   const handleUpdateVehicle = async () => {
     if (!validatePlateNumber(updatePlateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
@@ -258,25 +239,37 @@ const VehicleManagement = () => {
         const errorText = await response.text();
         throw new Error('Failed to delete vehicle: ' + errorText);
       }
-      
       setSuccessMessage('Vehicle deleted successfully!');
-      
-      setVehicles(vehicles.filter(vehicle => vehicle.id !== selectedVehicleId));
-      
       closeDeleteModal();
-      
+  
+      setVehicles((prevVehicles) => prevVehicles.filter(vehicle => vehicle.id !== selectedVehicleId));
     } catch (error) {
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
   };
-  
 
-  const filteredVehicles = Array.isArray(vehicles)
-  ? vehicles.filter(vehicle =>
-      vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : [];
+  const filteredVehicles = useMemo(() => {
+    return vehicles.filter(vehicle => {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      return (
+        vehicle.vehicleType.toLowerCase().includes(lowerCaseSearchTerm) ||
+        vehicle.plateNumber.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    });
+  }, [vehicles, searchTerm]);
+
+  const sortedVehicles = useMemo(() => {
+    return [...filteredVehicles].sort((a, b) => {
+      if (sortOption === 'vehicleType') {
+        return a.vehicleType.localeCompare(b.vehicleType);
+      } else if (sortOption === 'plateNumber') {
+        return a.plateNumber.localeCompare(b.plateNumber);
+      } else if (sortOption === 'capacity') {
+        return a.capacity - b.capacity;
+      }
+      return 0; 
+    });
+  }, [filteredVehicles, sortOption]);
 
   return (
     <div className="vehiclemanage">
@@ -416,7 +409,10 @@ const VehicleManagement = () => {
           <form action="" onSubmit={handleUpdateVehicle}>
             <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
               <h2>Update Vehicle 
-                <button className="close-vehicle-btn" onClick={closeUpdateModal}>
+                <button className="close-vehicle-btn"  onClick={(e) => {
+              e.preventDefault(); 
+              closeUpdateModal();
+            }}>
                   <IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/>
                 </button>
               </h2>

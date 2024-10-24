@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -21,7 +21,7 @@ const useCounter = (target, duration, startCounting) => {
     if (!startCounting) return;
     const stepTime = Math.abs(Math.floor(duration / target));
     const timer = setInterval(() => {
-      setCount((prevCount) => {
+      setCount(prevCount => {
         const newCount = Math.min(prevCount + 1, target);
         if (newCount >= target) {
           clearInterval(timer);
@@ -39,79 +39,44 @@ const useCounter = (target, duration, startCounting) => {
 const OpcDashboard = () => {
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [requests, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [startCounting, setStartCounting] = useState(false);
-  const requestCount = useCounter(requests.length, 1000, startCounting);
-  const driverCount = useCounter(drivers.length, 1000, startCounting);
-  const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
 
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchNumberOfDrivers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setDrivers(data);
+        const [driversRes, vehiclesRes, requestsRes] = await Promise.all([
+          fetch("http://localhost:8080/opc/driver/getAll", { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch("http://localhost:8080/vehicle/getAll", { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch("http://localhost:8080/reservations/getAll", { headers: { "Authorization": `Bearer ${token}` } })
+        ]);
+
+        const driversData = await driversRes.json();
+        const vehiclesData = await vehiclesRes.json();
+        const requestsData = await requestsRes.json();
+
+        setDrivers(driversData);
+        setVehicles(vehiclesData);
+        setRequests(requestsData);
+        setStartCounting(true);
       } catch (error) {
-        console.error("Failed to fetch driver details.", error);
+        console.error("Failed to fetch data.", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchNumberOfDrivers();
+    fetchData();
   }, [token]);
 
-  const handleMonthChange = (e) => {
-    setMonth(e.target.value);
-  };
+  const handleMonthChange = (e) => setMonth(e.target.value);
+  const handleYearChange = (e) => setYear(e.target.value);
 
-  const handleYearChange = (e) => {
-    setYear(e.target.value);
-  };
-
-  useEffect(() => {
-    const fetchNumberOfVehicles = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/vehicle/getAll", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setVehicles(data);
-      } catch (error) {
-        console.error("Failed to fetch vehicle data", error);
-      }
-    };
-    fetchNumberOfVehicles();
-  }, [token]);
-
-  useEffect(() => {
-    const fetchNumbersOfRequests = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/reservations/getAll", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setRequests(data);
-      } catch (error) {
-        console.error("Failed to fetch numbers of requests.", error);
-      }
-    };
-    fetchNumbersOfRequests();
-  }, [token]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      setStartCounting(true);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Define countReservationsPerDepartment here
   const countReservationsPerDepartment = (reservations) => {
     const counts = {};
     reservations.forEach(request => {
@@ -130,19 +95,24 @@ const OpcDashboard = () => {
     'College of Criminal Justice': 'CCJ',
   };
 
-  
-  const filteredReservations = requests.filter((request) => {
-    const reservationDate = new Date(request.date);
-    const reservationMonth = reservationDate.getMonth() + 1; 
-    const reservationYear = reservationDate.getFullYear(); 
+  const filteredReservations = useMemo(() => {
+    return requests.filter(request => {
+      const reservationDate = new Date(request.date);
+      const reservationMonth = reservationDate.getMonth() + 1;
+      const reservationYear = reservationDate.getFullYear();
 
-    return (month ? reservationMonth === Number(month) : true) && (year ? reservationYear === Number(year) : true);
-  });
+      return (month ? reservationMonth === Number(month) : true) &&
+             (year ? reservationYear === Number(year) : true);
+    });
+  }, [requests, month, year]);
 
-  const reservationCounts = countReservationsPerDepartment(filteredReservations);
+  const reservationCounts = useMemo(() => {
+    return countReservationsPerDepartment(filteredReservations);
+  }, [filteredReservations]);
+
   const labels = Object.keys(reservationCounts).map(department => departmentAcronyms[department] || department);
 
-  const data = {
+  const data = useMemo(() => ({
     labels: labels,
     datasets: [
       {
@@ -151,14 +121,12 @@ const OpcDashboard = () => {
         backgroundColor: ['orange', 'green', 'violet', 'gold', 'red', 'blue'],
       },
     ],
-  };
+  }), [labels, reservationCounts]);
 
   const options = {
     scales: {
       x: {
-        ticks: {
-          display: false,
-        },
+        ticks: { display: false },
       },
       y: {
         beginAtZero: true,
@@ -170,9 +138,7 @@ const OpcDashboard = () => {
         position: 'top',
         labels: {
           color: 'black',
-          font: {
-            size: 12,
-          },
+          font: { size: 12 },
           generateLabels: (chart) => {
             const datasets = chart.data.datasets;
             return datasets[0].backgroundColor.map((color, index) => ({
@@ -186,6 +152,10 @@ const OpcDashboard = () => {
       },
     },
   };
+
+  const requestCount = useCounter(requests.length, 1000, startCounting);
+  const driverCount = useCounter(drivers.length, 1000, startCounting);
+  const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
 
   return (
     <div className="dashboard">
@@ -235,26 +205,17 @@ const OpcDashboard = () => {
                     <label>Month: </label>
                     <select value={month} onChange={handleMonthChange}>
                       <option value="">Select Month</option>
-                      <option value="1">January</option>
-                      <option value="2">February</option>
-                      <option value="3">March</option>
-                      <option value="4">April</option>
-                      <option value="5">May</option>
-                      <option value="6">June</option>
-                      <option value="7">July</option>
-                      <option value="8">August</option>
-                      <option value="9">September</option>
-                      <option value="10">October</option>
-                      <option value="11">November</option>
-                      <option value="12">December</option>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+                      ))}
                     </select>
 
                     <label style={{ marginLeft: '10px' }}>Year: </label>
                     <select value={year} onChange={handleYearChange}>
                       <option value="">Select Year</option>
-                      <option value="2022">2022</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
+                      {Array.from({ length: 3 }, (_, i) => (
+                        <option key={2022 + i} value={2022 + i}>{2022 + i}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
