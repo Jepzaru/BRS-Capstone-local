@@ -104,7 +104,6 @@ body {
   margin: 0 auto;
 }
 
-
 .vehicle-list-container {
   background-color: #CBC3C3;
   width: 900px;
@@ -330,7 +329,6 @@ body {
 
 .vehicle-input {
   display: block;
-  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -401,4 +399,9 @@ body {
 
 .cancel-button:hover {
   background-color: #bbb;
+}
+
+.maintenance-date-container{
+  display: flex;
+  justify-content: space-evenly;
 }
