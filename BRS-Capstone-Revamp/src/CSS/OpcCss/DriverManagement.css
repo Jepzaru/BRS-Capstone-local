@@ -18,6 +18,21 @@ body {
   margin-top: 50px;
 }
 
+.complete-button{
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 85px;
+  transition: background-color 0.3s;
+  background-color: #2a612c;  
+  color: white;
+}
+
+.complete-button:hover{
+  background-color: #4CAF50;
+}
+
 .driver1 {
   display: flex;
   flex-direction: column;

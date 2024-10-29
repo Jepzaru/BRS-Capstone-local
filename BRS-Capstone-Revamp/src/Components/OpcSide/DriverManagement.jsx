@@ -39,6 +39,9 @@ const DriverManagement = () => {
   const minDate = getCurrentDate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const [selectedDriver, setSelectedDriver] = useState("all"); // Selected driver ID
+  const [reservations, setReservations] = useState([]); // Reservations for selected driver
+
 
   const token = localStorage.getItem('token');
 
@@ -56,6 +59,42 @@ const DriverManagement = () => {
     }
     fetchDriverDetails();
   }, [token]);
+
+  
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+  
+        // Filter reservations for selected driver or show all if "all" is selected
+        const filteredReservations = selectedDriver === "all" 
+          ? data 
+          : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10)); // Convert selectedDriver to number if driver_id is numeric
+  
+        setReservations(filteredReservations);
+      } catch (error) {
+        console.error("Error fetching reservations:", error);
+      }
+    };
+  
+    fetchReservations();
+  }, [selectedDriver, token]); // Dependency includes token and selectedDriver
+
+  const handleDriverChange = (event) => {
+    setSelectedDriver(event.target.value);
+    console.log('Selected Driver ID:', event.target.value);
+  };
+  
+  const filteredReservations = selectedDriver === 'all'
+      ? reservations
+      : reservations.filter(reservation => {
+          console.log('Checking reservation:', reservation);
+          return reservation.driverId === selectedDriver;
+        });
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -271,34 +310,55 @@ const DriverManagement = () => {
               </tbody>
             </table>
           </div>
-            <div class="driver-reservations">
-              <div className="driver-schedlist">
-                <h3><RiReservedFill style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Driver Reservations</h3>
-
-                <BsFillPersonFill style={{color: "#782324", marginLeft: "130px", marginBottom: "-2px"}}/><select className="reservation-filter">
-                <option value="all" disabled>Filter by Driver</option>
-                <option value="upcoming">John</option>
-                <option value="completed">Peter</option>
-              </select>
-              </div>
-            <table className="driver-table">
-              <thead>
-                <tr>
-                  <th> Vehicle</th>
-                  <th> Schedule</th>
-                  <th> Return Schedule</th>
-                  <th> Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                
-              </tbody>
-            </table>
-              
-            </div>
-
+          <div className="driver-reservations">
+                  <div className="driver-schedlist">
+                        <h3>
+                          <RiReservedFill style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />
+                          Driver Reservations
+                        </h3>
+                        <BsFillPersonFill style={{ color: "#782324", marginLeft: "130px", marginBottom: "-2px" }} />
+                        <select className="reservation-filter" value={selectedDriver} onChange={handleDriverChange}>
+                          <option value="all">All Drivers</option>
+                          {drivers.map(driver => (
+                            <option key={driver.id} value={driver.id}>{driver.driverName}</option>
+                          ))}
+                        </select>
+                  </div>
+                        <table className="driver-table">
+                          <thead>
+                            <tr>
+                              <th>Driver</th>
+                              <th>Vehicle</th>
+                              <th>Schedule</th>
+                              <th>Return Schedule</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {reservations
+                            .filter(reservation => 
+                              selectedDriver === 'all' || reservation.driverId === Number(selectedDriver)
+                            )
+                            .map(reservation => (
+                              <tr key={reservation.id}>
+                                <td>{reservation.driverName || 'N/A'}</td>
+                                <td>{reservation.vehicleType || 'N/A'} - {reservation.plateNumber || 'N/A'}</td>
+                                <td>{reservation.schedule ? new Date(reservation.schedule).toLocaleDateString() : 'N/A'}</td>
+                                <td>{reservation.returnSchedule ? new Date(reservation.returnSchedule).toLocaleDateString() : 'N/A'}</td>
+                                <td>
+                                  <button 
+                                    className="complete-button" 
+                                    onClick={() => handleComplete(reservation.id)}
+                                  >
+                                    Complete
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                </div>
           </div>
-
           <img src={logoImage1} alt="Logo" className="driver-logo-image" />
         </div>
       </div>
