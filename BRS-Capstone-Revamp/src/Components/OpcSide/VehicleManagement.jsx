@@ -8,7 +8,7 @@ import { MdAddCircle } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
 import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { PiNumberSquareZeroFill } from "react-icons/pi";
-import { FaUserGroup } from "react-icons/fa6";
+import { FaUserGroup, FaCircleCheck } from "react-icons/fa6";
 import { RiAlarmWarningFill } from "react-icons/ri";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
@@ -34,6 +34,8 @@ const VehicleManagement = () => {
   const [updateMaintenanceStartDate, setUpdateMaintenanceStartDate] = useState('');
   const [updateMaintenanceEndDate, setUpdateMaintenanceEndDate] = useState('');
   const [filterType, setFilterType] = useState("all");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [vehicleToComplete, setVehicleToComplete] = useState(null);
 
   const token = localStorage.getItem('token');
 
@@ -182,9 +184,9 @@ const VehicleManagement = () => {
     }
   };
 
-  const handleUpdateVehicle = async (e) => {
+  const handleUpdateVehicle = async (e, vehicleId = selectedVehicleId) => {
     e.preventDefault();
-    
+  
     if (!validatePlateNumber(updatePlateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
@@ -211,7 +213,7 @@ const VehicleManagement = () => {
         maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
       };
   
-      const response = await fetch(`http://localhost:8080/opc/vehicle/update/${selectedVehicleId}`, {
+      const response = await fetch(`http://localhost:8080/opc/vehicle/update/${vehicleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -228,7 +230,7 @@ const VehicleManagement = () => {
       const updatedVehicle = await response.json();
       setVehicles((prevVehicles) =>
         prevVehicles.map(vehicle =>
-          vehicle.id === selectedVehicleId ? updatedVehicle : vehicle
+          vehicle.id === vehicleId ? updatedVehicle : vehicle
         )
       );
   
@@ -238,8 +240,9 @@ const VehicleManagement = () => {
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
-  };  
-
+  };
+  
+  
   const handleDeleteVehicle = async () => {
     if (!selectedVehicleId) return;
     try {
@@ -398,9 +401,16 @@ const VehicleManagement = () => {
                           <td>{startDate}</td>
                           <td>{endDate}</td>
                           <td>
-                            <button onClick={() => {/* Add your action here, e.g., open detail or edit */}}>
-                              Action
-                            </button>
+                          <button 
+                          className='complete-btn' 
+                          onClick={() => {
+                            setVehicleToComplete(vehicle.id); 
+                            setIsConfirmModalOpen(true); 
+                          }}
+                        >
+                          <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "10px" }} />Complete
+                        </button>
+
                           </td>
                         </tr>
                       );
@@ -564,6 +574,30 @@ const VehicleManagement = () => {
           </div>
         </div>
       )}
+
+{isConfirmModalOpen && (
+  <div className="confirm-modal-overlay">
+    <div className="confirm-modal-content">
+      <h2>Are you sure to complete the maintenance?</h2>
+      <div className="confirm-modal-buttons">
+        <button className="cancel-button" onClick={() => setIsConfirmModalOpen(false)}>Cancel</button>
+        <button 
+          className="confirm-button" 
+          onClick={() => {
+            console.log("Complete button clicked.");
+            setUpdateStatus("Available"); 
+            setSelectedVehicleId(vehicleToComplete);
+            handleUpdateVehicle({ preventDefault: () => {} }, vehicleToComplete); 
+            setIsConfirmModalOpen(false); 
+          }}
+        >
+          Complete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

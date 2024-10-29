@@ -79,32 +79,34 @@ const ReserveCalendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => 
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const days = [];
-  
+
     for (let i = 0; i < firstDay; i++) {
-        days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
+        days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false, past: false, event: false });
     }
-  
+
     for (let i = 1; i <= totalDays; i++) {
         const date = new Date(currentYear, currentMonth, i);
-        const isPast = date < currentDate; 
+        const isPast = date < currentDate && date.toDateString() !== currentDate.toDateString(); // Exclude today from being past
         const isBeforeMinDate = minDate && date < minDate;
 
         const reservedInfo = reservedDates.find(res =>
             res.schedule.toDateString() === date.toDateString() ||
             (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
         );
-  
+
         const isReserved = reservedInfo !== undefined;
         const hasEvent = events.some(event => event.toDateString() === date.toDateString());
 
-        const isHighlighted = hasEvent; 
+        const isToday = date.toDateString() === currentDate.toDateString(); 
 
         days.push({
             day: i,
             selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isHighlighted, 
+            disabled: isPast || isBeforeMinDate || hasEvent,
             reserved: isReserved,
-            highlight: isHighlighted 
+            highlight: isToday, 
+            past: isPast, 
+            event: hasEvent, 
         });
     }
     return days;
@@ -170,15 +172,15 @@ const ReserveCalendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => 
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
           <div key={day} className="user-calendar-day-name">{day}</div>
         ))}
-        {generateDays().map((item, index) => (
-          <div
-            key={index}
-            className={`user-calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} 
-            onClick={() => !item.disabled && handleDayClick(item.day)}
-          >
-            {item.day}
-          </div>
-        ))}
+      {generateDays().map((item, index) => (
+    <div
+        key={index}
+        className={`user-calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}${item.past ? ' past' : ''}${item.event ? ' event' : ''}`} 
+        onClick={() => !item.disabled && handleDayClick(item.day)}
+    >
+        {item.day}
+    </div>
+))}
       </div>
     </div>
   );

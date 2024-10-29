@@ -1,135 +1,87 @@
-*{
-    font-family: 'Poppins', sans-serif;
-   }
-  
-  .user-calendar {
-    padding: 30px;
-    width: 420px;
-    height: 340px;
-    background-color: #ddd; 
-    border-radius: 15px;
-  }
-    
-  .user-calendar-nav {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-  }
-  
-  .user-calendar-nav button {
-    background-color: #f0f0f0;
-    border: none;
-    padding: 2px 8px;
-    cursor: pointer;
-    border-radius: 10px;
-  }
-  
-  .user-calendar-month {
-    font-weight: bold;
-    font-size: 16px;
-    color: black;
-    border-radius: 10px;
-    background-color: #ffcc00;
-    border: 2px solid black;
-    padding: 10px 50px;
-  }
-  
-  .user-calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-  
-  .user-calendar-day-name{
-    text-align: center;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 8px 10px;
-    background-color: #782324;
-    color: white;
-  }
-  .user-calendar-day{
-    text-align: center;
-    padding: 8px 10px;
-    font-size: 12px;
-    background-color: white;
-    cursor: pointer;
-  }
-  
-  .user-calendar-day.active {
-    background-color: #ffcc00;
-    border: 4px solid #782324;
-    font-weight: bold;
-  }
-  .user-calendar-day:hover{
-    background-color:  #782324;
-    transition: background-color 0.3s;
-    font-weight: 700;
-    color: white
-  
-  }
-  .user-calendar-events-content{
-    background-color: white;
-    height: 210px;
-    border-radius: 10px;
-    overflow-y: auto;
-  }
-  
-  .user-event-item{
-    cursor: pointer;
-    background-color: #ddd;
-    color: black;
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-top: 15px;
-    
-  
-  }
-  
-  
-  .user-event-item:hover{
-    background-color: #ffcc00;
-    color: #782324;
-    transition: background-color 0.3s;
-  }
-  
-  .user-event-description{
-    background-color: white;
-    color: rgb(33, 33, 33);
-    border-radius: 8px;
-  }
-  
-  .user-details{
-   padding: 10px;
-  }
-  
-  .user-previous{
-    font-weight: 900;
-  }
-  .user-next{
-    font-weight: 900;
-  }
-  .user-previous:hover{
-    background-color: #782324;
-    transition: background-color 0.3s;
-    color: #ffcc00;
-  }
-  .user-next:hover{
-    background-color: #782324;
-    transition: background-color 0.3s;
-    color: #ffcc00;
-  }
-  .user-calendar-day.past {
-    opacity: 0.5;
-  }
+* {
+  font-family: 'Poppins', sans-serif;
+}
 
-  .user-calendar-day.highlighted {
-    background-color: #ffcc00; 
-    font-weight: bold;
-  }
-  
-  .highlight {
-    background-color: red; 
-    color: white;
-    cursor: pointer; 
-  }
+.user-calendar {
+  padding: 30px;
+  width: 420px;
+  height: 340px;
+  background-color: #ddd; 
+  border-radius: 15px;
+}
+
+.user-calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.user-calendar-nav button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.user-calendar-month {
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+  border-radius: 10px;
+  background-color: #ffcc00;
+  border: 2px solid black;
+  padding: 10px 50px;
+}
+
+.user-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.user-calendar-day-name {
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 8px 10px;
+  background-color: #782324;
+  color: white;
+}
+
+.user-calendar-day {
+  text-align: center;
+  padding: 8px 10px;
+  font-size: 12px;
+  background-color: white;
+  cursor: pointer;
+  transition: opacity 0.3s; 
+}
+
+.user-calendar-day.active {
+  background-color: #ffcc00;
+  border: 4px solid #782324;
+  font-weight: bold;
+}
+
+.user-calendar-day:hover {
+  background-color: #782324;
+  transition: background-color 0.3s;
+  font-weight: 700;
+  color: white;
+}
+
+.user-calendar-day.event {
+  background-color: red; 
+  color: white; 
+}
+
+.user-calendar-day.past {
+  opacity: 0.3; 
+}
+
+.user-calendar-day.highlight {
+  background-color: #ffcc00; 
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.884);
+}

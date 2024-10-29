@@ -27,23 +27,18 @@ const ForgotPassword = () => {
 
     const handleSendCode = (e) => {
         e.preventDefault();
-        // Logic to send code can go here
-
-        // Show the verification code input field
         setShowVerificationField(true);
     };
 
     const handleVerifyCode = (e) => {
         e.preventDefault();
-        // Logic to verify the code can go here
 
-        // Show the password fields after verification
         setShowPasswordFields(true);
     };
 
     const handleResetPassword = (e) => {
         e.preventDefault();
-        // Logic to reset password can go here
+    
     };
 
     const toggleNewPasswordVisibility = useCallback(() => {
