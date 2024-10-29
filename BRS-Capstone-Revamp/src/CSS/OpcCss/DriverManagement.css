@@ -186,7 +186,7 @@ body {
 
 .driver-table tbody {
   display: block;
-  max-height: 630px; 
+  max-height: 550px; 
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -212,6 +212,7 @@ body {
 .driver-table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
 
 .driver-delete-button {
   background-color: #782324;

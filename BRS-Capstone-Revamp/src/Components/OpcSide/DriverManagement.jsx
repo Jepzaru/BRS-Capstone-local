@@ -39,8 +39,8 @@ const DriverManagement = () => {
   const minDate = getCurrentDate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
-  const [selectedDriver, setSelectedDriver] = useState("all"); // Selected driver ID
-  const [reservations, setReservations] = useState([]); // Reservations for selected driver
+  const [selectedDriver, setSelectedDriver] = useState("all"); 
+  const [reservations, setReservations] = useState([]); 
 
 
   const token = localStorage.getItem('token');
@@ -69,10 +69,10 @@ const DriverManagement = () => {
         });
         const data = await response.json();
   
-        // Filter reservations for selected driver or show all if "all" is selected
+
         const filteredReservations = selectedDriver === "all" 
           ? data 
-          : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10)); // Convert selectedDriver to number if driver_id is numeric
+          : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10)); 
   
         setReservations(filteredReservations);
       } catch (error) {
@@ -81,7 +81,7 @@ const DriverManagement = () => {
     };
   
     fetchReservations();
-  }, [selectedDriver, token]); // Dependency includes token and selectedDriver
+  }, [selectedDriver, token]); 
 
   const handleDriverChange = (event) => {
     setSelectedDriver(event.target.value);
