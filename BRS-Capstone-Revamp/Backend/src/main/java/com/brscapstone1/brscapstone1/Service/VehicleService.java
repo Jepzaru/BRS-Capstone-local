@@ -34,10 +34,20 @@ public class VehicleService {
         vehicle.setPlateNumber(newVehicle.getPlateNumber());
         vehicle.setCapacity(newVehicle.getCapacity());
 
-        if(newVehicle.getStatus() == null){
+        if(newVehicle.getStatus() == null) {
           vehicle.setStatus("Available");
-        }else{
+          vehicle.setMaintenanceStartDate(null);
+          vehicle.setMaintenanceEndDate(null);
+        } else {
           vehicle.setStatus(newVehicle.getStatus());
+          
+          if ("Maintenance".equals(newVehicle.getStatus())) {
+              vehicle.setMaintenanceStartDate(newVehicle.getMaintenanceStartDate());
+              vehicle.setMaintenanceEndDate(newVehicle.getMaintenanceEndDate());
+          } else {
+              vehicle.setMaintenanceStartDate(null);
+              vehicle.setMaintenanceEndDate(null);
+          }
         }
 
         return vehicleRepository.save(vehicle);

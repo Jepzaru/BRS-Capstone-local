@@ -31,6 +31,9 @@ const VehicleManagement = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('vehicleType'); 
+  const [updateMaintenanceStartDate, setUpdateMaintenanceStartDate] = useState('');
+  const [updateMaintenanceEndDate, setUpdateMaintenanceEndDate] = useState('');
+  const [filterType, setFilterType] = useState("all");
 
   const token = localStorage.getItem('token');
 
@@ -104,6 +107,8 @@ const VehicleManagement = () => {
     setUpdatePlateNumber(vehicle.plateNumber);
     setUpdateCapacity(vehicle.capacity);
     setUpdateStatus(vehicle.status);
+    setUpdateMaintenanceStartDate(vehicle.maintenanceStartDate || '');
+    setUpdateMaintenanceEndDate(vehicle.maintenanceEndDate || '');
     setSelectedVehicleId(vehicle.id);
     setIsUpdateModalOpen(true);
     setIsClosing(false);
@@ -177,54 +182,63 @@ const VehicleManagement = () => {
     }
   };
 
-  const handleUpdateVehicle = async () => {
+  const handleUpdateVehicle = async (e) => {
+    e.preventDefault();
+    
     if (!validatePlateNumber(updatePlateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
+  
     const capacityNumber = Number(updateCapacity);
     if (isNaN(capacityNumber) || capacityNumber < 0) {
       setErrorMessage('Capacity must be a non-negative number');
       return;
     }
+  
+    if (updateStatus === 'Maintenance' && (!updateMaintenanceStartDate || !updateMaintenanceEndDate)) {
+      setErrorMessage('Please provide both start and end dates for maintenance.');
+      return;
+    }
+  
     try {
       const requestData = {
         vehicleType: updateVehicleType,
         plateNumber: updatePlateNumber,
         capacity: capacityNumber,
-        status: updateStatus
+        status: updateStatus,
+        maintenanceStartDate: updateStatus === 'Maintenance' ? updateMaintenanceStartDate : null,
+        maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
       };
   
       const response = await fetch(`http://localhost:8080/opc/vehicle/update/${selectedVehicleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestData), 
+        body: JSON.stringify(requestData),
       });
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error('Failed to update vehicle: ' + errorText);
       }
+  
+      const updatedVehicle = await response.json();
+      setVehicles((prevVehicles) =>
+        prevVehicles.map(vehicle =>
+          vehicle.id === selectedVehicleId ? updatedVehicle : vehicle
+        )
+      );
+  
       setSuccessMessage('Vehicle updated successfully!');
       closeUpdateModal();
-  
-      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (!updatedVehicles.ok) {
-        throw new Error('Failed to fetch updated vehicle list');
-      }
-      const data = await updatedVehicles.json();
-      setVehicles(data);
   
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
-  };
+  };  
 
   const handleDeleteVehicle = async () => {
     if (!selectedVehicleId) return;
@@ -298,71 +312,112 @@ const VehicleManagement = () => {
             </div>
           </div>
           <div class="vehicle-management-wrapper">
-          <div className='vehicle-list-container'>
-            <table className="vehicle-table">
-              <thead>
-                <tr>
-                  <th><FaBus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Vehicle Type</th>
-                  <th><PiNumberSquareZeroFill  style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Plate Number</th>
-                  <th><FaUserGroup style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Maximum Capacity</th>
-                  <th><RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/>  Status</th>
-                  <th><MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredVehicles.length > 0 ? (
-                  filteredVehicles.map(vehicle => (
-                    <tr key={vehicle.id}>
-                      <td>{vehicle.vehicleType}</td>
-                      <td>{vehicle.plateNumber}</td>
-                      <td>{vehicle.capacity}</td>
-                      <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'orange' }}>
-                      {vehicle.status}
-                      </td>
-                      <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(vehicle)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
-                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
+            <div className='vehicle-list-container'>
+              <table className="vehicle-table">
+                <thead>
                   <tr>
-                    <td colSpan="5">No Vehicle Found</td>
+                    <th><FaBus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Vehicle Type</th>
+                    <th><PiNumberSquareZeroFill  style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Plate Number</th>
+                    <th><FaUserGroup style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Maximum Capacity</th>
+                    <th><RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/>  Status</th>
+                    <th><MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="vehicle-reservations">
+                </thead>
+                <tbody>
+                  {filteredVehicles.length > 0 ? (
+                    filteredVehicles.map(vehicle => (
+                      <tr key={vehicle.id}>
+                        <td>{vehicle.vehicleType}</td>
+                        <td>{vehicle.plateNumber}</td>
+                        <td>{vehicle.capacity}</td>
+                        <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'orange' }}>
+                        {vehicle.status}
+                        </td>
+                        <td className='td-action'>
+                          <button className="update-button" onClick={() => openUpdateModal(vehicle)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
+                          <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5">No Vehicle Found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="vehicle-reservations">
               <div className="vehicle-schedlist">
-                <h3><FaTools style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle Maintainance</h3>
-
-                <FaBus style={{color: "#782324", marginLeft: "90px", marginBottom: "-2px"}}/><select className="reservation-filter">
-                <option value="all" disabled>Filter by Vehicle</option>
-                <option value="upcoming">Bus</option>
-                <option value="completed">Coaster</option>
-              </select>
+                <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
+                <FaBus style={{ color: "#782324", marginLeft: "90px", marginBottom: "-2px" }} />
+                <select
+                  className="reservation-filter"
+                  onChange={(e) => setFilterType(e.target.value)}
+                  value={filterType}
+                >
+                  <option value="all">All Vehicles</option>
+                  {[...new Set(vehicles.map(vehicle => vehicle.vehicleType))].map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
               </div>
-            <table className="driver-table">
-              <thead>
-                <tr>
-                  <th> Vehicle</th>
-                  <th> Start</th>
-                  <th> End</th>
-                  <th> Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                
-              </tbody>
-            </table>
-              
+              <table className="driver-table">
+                <thead>
+                  <tr>
+                    <th>Vehicle</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vehicles
+                    .filter(vehicle => vehicle.status === 'Maintenance' && (filterType === 'all' || vehicle.vehicleType === filterType))
+                    .map(vehicle => {
+                      const startDate = vehicle.maintenanceStartDate
+                        ? new Date(vehicle.maintenanceStartDate).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : 'N/A';
+
+                      const endDate = vehicle.maintenanceEndDate
+                        ? new Date(vehicle.maintenanceEndDate).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : 'N/A';
+
+                      return (
+                        <tr key={vehicle.id}>
+                          <td>{vehicle.vehicleType}</td>
+                          <td>{startDate}</td>
+                          <td>{endDate}</td>
+                          <td>
+                            <button onClick={() => {/* Add your action here, e.g., open detail or edit */}}>
+                              Action
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  {vehicles.filter(vehicle => vehicle.status === 'Maintenance' && (filterType === 'all' || vehicle.vehicleType === filterType)).length === 0 && (
+                    <tr>
+                      <td colSpan="4">No vehicles currently under maintenance</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
       </div>
+
       {isAddModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <form action="" onSubmit={handleAddVehicle}>
@@ -404,16 +459,17 @@ const VehicleManagement = () => {
           </form>
         </div>
       )}
+
       {isUpdateModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <form action="" onSubmit={handleUpdateVehicle}>
             <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
               <h2>Update Vehicle 
-                <button className="close-vehicle-btn"  onClick={(e) => {
-              e.preventDefault(); 
-              closeUpdateModal();
-            }}>
-                  <IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/>
+                <button className="close-vehicle-btn" onClick={(e) => {
+                  e.preventDefault(); 
+                  closeUpdateModal();
+                }}>
+                  <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
                 </button>
               </h2>
               <div className='add-vehicle-input'>
@@ -442,19 +498,53 @@ const VehicleManagement = () => {
                   onChange={(e) => setUpdateCapacity(e.target.value)}
                   required
                 />
-                 <label htmlFor='vehicle-status'>Status</label>
-               <select
+                <label htmlFor='vehicle-status'>Status</label>
+                <select
                   className="vehicle-input"
                   value={updateStatus}
-                  onChange={(e) => setUpdateStatus(e.target.value)}
+                  onChange={(e) => {
+                    setUpdateStatus(e.target.value);
+                    if (e.target.value !== 'Maintenance') {
+                      setUpdateMaintenanceStartDate('');
+                      setUpdateMaintenanceEndDate('');
+                    }
+                  }}
                   required
                 >
                   <option value="Available">Available</option>
                   <option value="Maintenance">Maintenance</option>
                 </select>
+
+                {updateStatus === 'Maintenance' && (
+                  <div className="maintenance-date-container">
+                    <div>
+                      <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
+                      <input
+                        type="date"
+                        id="maintenance-start-date"
+                        value={updateMaintenanceStartDate}
+                        onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
+                        className="vehicle-input"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
+                      <input
+                        type="date"
+                        id="maintenance-end-date"
+                        value={updateMaintenanceEndDate}
+                        onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
+                        className="vehicle-input"
+                        min={updateMaintenanceStartDate || ''}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
               <div className='add-vehicle-buttons'>
-                <button className="add-vehicle-submit-btn" >Update Vehicle</button>
+                <button className="add-vehicle-submit-btn">Update Vehicle</button>
               </div>
               {successMessage && <p className="success-message">{successMessage}</p>}
               {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -462,6 +552,7 @@ const VehicleManagement = () => {
           </form>
         </div>
       )}
+
       {isDeleteModalOpen && (
         <div className="delete-modal-overlay">
           <div className="delete-modal-content">
