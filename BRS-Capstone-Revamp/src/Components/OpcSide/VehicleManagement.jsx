@@ -528,28 +528,31 @@ const VehicleManagement = () => {
                 {updateStatus === 'Maintenance' && (
                   <div className="maintenance-date-container">
                     <div>
-                      <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
-                      <input
-                        type="date"
-                        id="maintenance-start-date"
-                        value={updateMaintenanceStartDate}
-                        onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
-                        className="vehicle-input"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
-                      <input
-                        type="date"
-                        id="maintenance-end-date"
-                        value={updateMaintenanceEndDate}
-                        onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
-                        className="vehicle-input"
-                        min={updateMaintenanceStartDate || ''}
-                        required
-                      />
-                    </div>
+                    <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
+                    <input
+                      type="date"
+                      id="maintenance-start-date"
+                      value={updateMaintenanceStartDate}
+                      onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
+                      className="vehicle-input"
+                      required
+                      min={new Date().toISOString().split("T")[0]} 
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
+                    <input
+                      type="date"
+                      id="maintenance-end-date"
+                      value={updateMaintenanceEndDate}
+                      onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
+                      className="vehicle-input"
+                      min={updateMaintenanceStartDate ? updateMaintenanceStartDate : new Date().toISOString().split("T")[0]} 
+                      required
+                      disabled={!updateMaintenanceStartDate} 
+                    />
+                  </div>
+
                   </div>
                 )}
               </div>
