@@ -16,6 +16,8 @@ import com.brscapstone1.brscapstone1.Repository.ReservationRepository;
 import com.brscapstone1.brscapstone1.Repository.ReservationVehicleRepository;
 import com.brscapstone1.brscapstone1.Repository.VehicleRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class ReservationService {
     
@@ -394,7 +396,16 @@ public class ReservationService {
             existingReservation.setRejectedBy("Head");
         }
     }
+
+    public ReservationEntity completeReservation(int reservationId) {
+        ReservationEntity reservation = resRepo.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
     
+        reservation.setIsCompleted(true);  // Sets isCompleted to 1 (true)
+        reservation.setStatus("Completed");
+    
+        return resRepo.save(reservation);
+    }
     
 
 }

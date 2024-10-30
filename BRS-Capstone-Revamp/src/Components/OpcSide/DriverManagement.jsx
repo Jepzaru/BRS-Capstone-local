@@ -65,24 +65,26 @@ const DriverManagement = () => {
   
   useEffect(() => {
     const fetchReservations = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
+        try {
+            const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await response.json();
+            
+            const filteredReservations = selectedDriver === "all" 
+                ? data 
+                : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10));
 
-        const filteredReservations = selectedDriver === "all" 
-          ? data 
-          : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10));
-
-        setReservations(filteredReservations);
-      } catch (error) {
-        console.error("Error fetching reservations:", error);
-      }
+            // Ensure the reservations include the is_completed status
+            setReservations(filteredReservations);
+        } catch (error) {
+            console.error("Error fetching reservations:", error);
+        }
     };
 
     fetchReservations();
-  }, [selectedDriver, token]);
+}, [selectedDriver, token]); // Make sure to include any dependencies
+
 
   // Get a unique list of drivers for the dropdown
   const driverNames = Array.from(new Set(reservations.map(reservation => reservation.driverName))).filter(Boolean);
@@ -212,6 +214,45 @@ const DriverManagement = () => {
       console.error("Failed to delete driver.", error);
     }
   };
+
+  const handleComplete = async (reservationId) => {
+    const isConfirmed = window.confirm("Are you sure to complete this reservation?");
+    
+    if (!isConfirmed) {
+        return; 
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/user/reservations/complete/${reservationId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to complete reservation: ${response.status} ${errorText}`);
+        }
+
+        setReservations(prevReservations => 
+            prevReservations.map(reservation => 
+                reservation.id === reservationId ? { ...reservation, is_completed: 1, status: 'Completed' } : reservation
+            )
+        );
+
+        alert("Reservation completed successfully!");
+        window.location.reload();
+
+    } catch (error) {
+        console.error("Failed to complete reservation:", error);
+        alert(error.message);
+    }
+};
+
+
+
 
   const sortedDrivers = [...drivers].sort((a, b) => {
     switch (sortOption) {
@@ -362,12 +403,11 @@ const DriverManagement = () => {
                           <td>{reservation.returnSchedule ? new Date(reservation.returnSchedule).toLocaleDateString() : 'N/A'}</td>
                           <td>{reservation.pickUpTime || 'N/A'}</td>
                           <td>
-                            <button 
-                              className="complete-button" 
-                              onClick={() => handleComplete(reservation.id)}
-                            >
-                              Complete
-                            </button>
+                          {reservation.isCompleted === true ? (
+                          <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>
+                        ) : (
+                          <button onClick={() => handleComplete(reservation.id)}>Complete</button>
+                        )}
                           </td>
                         </tr>
                       ))
