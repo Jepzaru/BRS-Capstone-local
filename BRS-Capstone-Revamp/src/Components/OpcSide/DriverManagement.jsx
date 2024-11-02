@@ -75,7 +75,7 @@ const DriverManagement = () => {
                 ? data 
                 : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10));
 
-            // Ensure the reservations include the is_completed status
+            
             setReservations(filteredReservations);
         } catch (error) {
             console.error("Error fetching reservations:", error);
@@ -83,27 +83,26 @@ const DriverManagement = () => {
     };
 
     fetchReservations();
-}, [selectedDriver, token]); // Make sure to include any dependencies
+}, [selectedDriver, token]); 
 
 
-  // Get a unique list of drivers for the dropdown
   const driverNames = Array.from(new Set(reservations.map(reservation => reservation.driverName))).filter(Boolean);
 
-  // Filter reservations based on the selected driver name
+ 
   const filteredList = selectedDriverName === "all"
     ? reservations
     : reservations.filter(reservation => reservation.driverName === selectedDriverName);
 
   const handleDriverChange = (event) => {
     setSelectedDriver(event.target.value);
-    console.log("Selected Driver ID:", event.target.value); // Log the selected driver ID
+    console.log("Selected Driver ID:", event.target.value); 
   };
   
   const filteredReservations = selectedDriver === 'all'
   ? reservations
   : reservations.filter(reservation => {
       console.log('Checking reservation:', reservation);
-      return reservation.driverId === Number(selectedDriver); // Ensure correct type
+      return reservation.driverId === Number(selectedDriver); 
     });
 
   const openModal = () => {
@@ -317,12 +316,12 @@ const DriverManagement = () => {
             <table className="driver-table">
               <thead>
                 <tr>
-                  <th><IoMdPerson style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Driver Name</th> 
-                  <th> <FaPhoneAlt style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Phone Number</th>
-                  <th> <RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/> Status</th>
-                  <th> <FaCalendarDay style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Start Leave Date</th>
-                  <th> <FaCalendarMinus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> End Leave Date</th>
-                  <th> <MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
+                  <th> Driver Name</th> 
+                  <th> Phone Number</th>
+                  <th> Status</th>
+                  <th> Start Leave Date</th>
+                  <th> End Leave Date</th>
+                  <th> Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -406,7 +405,7 @@ const DriverManagement = () => {
                           {reservation.isCompleted === true ? (
                           <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>
                         ) : (
-                          <button onClick={() => handleComplete(reservation.id)}>Complete</button>
+                          <button className="complete-button" onClick={() => handleComplete(reservation.id)}>Complete</button>
                         )}
                           </td>
                         </tr>

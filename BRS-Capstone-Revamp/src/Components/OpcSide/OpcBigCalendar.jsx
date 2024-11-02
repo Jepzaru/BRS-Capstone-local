@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/OpcCss/OpcBigCalendar.css'; 
 import SideNavbar from './OpcNavbar';
+import logoImage1 from "../../Images/citbglogo.png";
 import { BiSolidRightArrow, BiSolidLeftArrow, BiSolidMessageAltDetail } from "react-icons/bi";
 import Header from '../../Components/UserSide/Header';
 import { MdEvent, MdDelete, MdEdit } from 'react-icons/md';
@@ -390,6 +391,7 @@ const OpcBigCalendar = () => {
           </div>
         )}
       </div>
+      <img src={logoImage1} alt="Logo" className="driver-logo-image" />
     </div>
   );
 };
