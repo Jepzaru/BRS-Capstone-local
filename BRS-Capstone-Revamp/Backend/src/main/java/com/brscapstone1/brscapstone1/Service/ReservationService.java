@@ -400,10 +400,18 @@ public class ReservationService {
     public ReservationEntity completeReservation(int reservationId) {
         ReservationEntity reservation = resRepo.findById(reservationId)
                 .orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
-    
-        reservation.setIsCompleted(true);  // Sets isCompleted to 1 (true)
+
         reservation.setStatus("Completed");
-    
+        reservation.setIsCompleted(true);
+
+        if (reservation.getReservedVehicles() != null) {
+            for (ReservationVehicleEntity vehicle : reservation.getReservedVehicles()) {
+                vehicle.setStatus("Completed");
+                vehicle.setIsCompleted(true); 
+                reservationVehicleRepository.save(vehicle); 
+            }
+        }
+
         return resRepo.save(reservation);
     }
     

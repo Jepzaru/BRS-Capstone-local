@@ -116,6 +116,13 @@ body {
   justify-content: center;
 }
 
+.vehicle-table-container {
+  max-height: 600px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  background-color: white;
+}
+
 .vehicle-reservations {
   background-color: #CBC3C3; 
   width: 550px; 
@@ -133,12 +140,26 @@ body {
   align-items: center;
   justify-content: space-between;
   background-color: white;
-  width: 550px;
+  width: 899px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
 .vehicle-schedlist h3{
+  margin-left: 15px;
+}
+
+.vehicle-schedlist2{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  width: 550px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.vehicle-schedlist2 h3{
   margin-left: 15px;
 }
 
@@ -152,14 +173,15 @@ body {
 
 .vehicle-table thead {
   background-color: #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .vehicle-table tbody {
   display: block;
   max-height: 630px; 
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .vehicle-table thead, .vehicle-table tbody tr {

@@ -8,14 +8,16 @@ body {
   font-family: 'Poppins', sans-serif;
   color: black;
   z-index: -999;
+  overflow-y: hidden;
 }
 
 .driver-manage-content1 {
   display: flex;
   flex: 1;
   padding: 20px;
-  margin-left: 300px;
+  margin-left: 300px; 
   margin-top: 50px;
+  height: calc(100vh - 50px); 
 }
 
 .complete-button{
@@ -128,9 +130,9 @@ body {
 
 .driver-management-wrapper {
   display: flex;
+  flex-direction: row; 
   gap: 20px; 
   justify-content: space-between;
-  margin: 0 auto;
 }
 
 .driver-reservations {
@@ -145,14 +147,15 @@ body {
   justify-content: center;
 }
 
-.driver-schedlist{
+.driver-schedlist {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: white;
-  width: 715px;
+  width: 732px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  z-index: 10; 
 }
 
 .driver-schedlist h3{
@@ -174,24 +177,42 @@ body {
   background-color: #e0e0e0;
 }
 
+.driver-table-container {
+  max-height: 600px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  background-color: white;
+}
+
+.driver-list-container, .driver-reservations {
+  flex: 1; 
+  min-width: 350px; 
+}
 
 .driver-table {
-  width: 100%;
+  width: 100%; 
+  border-collapse: collapse;
+}
+
+.driver-table {
+  width: calc(100% - 2px); 
   border-collapse: collapse;
   background-color: white;
   height: 700px;
+  padding-right: 15px; 
+  box-sizing: border-box; 
 }
 
 .driver-table thead {
   background-color: #ddd;
+  position: sticky; 
+  top: 0; 
 }
 
 .driver-table tbody {
-  display: block;
+  display: block; 
   max-height: 550px; 
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .driver-table thead, .driver-table tbody tr {
@@ -215,15 +236,17 @@ body {
   background-color: #f9f9f9;
 }
 
+
+
 .button-container {
   display: flex;
   flex-direction: column;
-  gap: 5px; /* Space between Update and Delete buttons */
+  gap: 5px; 
 }
 
 .driver-update-button,
 .driver-delete-button {
-  width: 100%; /* Ensures both buttons take the full width of the cell */
+  width: 100%; 
 }
 
 .driver-delete-button {
@@ -234,7 +257,7 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .driver-update-button {
@@ -242,10 +265,10 @@ body {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 8px;
+  padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .update-button:hover, .delete-button:hover {

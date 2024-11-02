@@ -316,6 +316,10 @@ const VehicleManagement = () => {
           </div>
           <div class="vehicle-management-wrapper">
             <div className='vehicle-list-container'>
+            <div className="vehicle-schedlist">
+                <h3><FaBus style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle List</h3>
+              </div>
+            <div className='vehicle-table-container'>
               <table className="vehicle-table">
                 <thead>
                   <tr>
@@ -350,11 +354,12 @@ const VehicleManagement = () => {
                 </tbody>
               </table>
             </div>
+            </div>
             
             <div className="vehicle-reservations">
-              <div className="vehicle-schedlist">
+              <div className="vehicle-schedlist2">
                 <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
-                <FaBus style={{ color: "#782324", marginLeft: "90px", marginBottom: "-2px" }} />
+                <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
                 <select
                   className="reservation-filter"
                   onChange={(e) => setFilterType(e.target.value)}
@@ -366,12 +371,12 @@ const VehicleManagement = () => {
                   ))}
                 </select>
               </div>
-              <table className="driver-table">
+              <table className="vehicle-table">
                 <thead>
                   <tr>
                     <th>Vehicle</th>
-                    <th>Start</th>
-                    <th>End</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
                     <th>Action</th>
                   </tr>
                 </thead>
