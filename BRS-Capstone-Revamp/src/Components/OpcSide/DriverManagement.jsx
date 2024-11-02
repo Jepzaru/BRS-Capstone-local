@@ -344,14 +344,16 @@ const DriverManagement = () => {
                       </td>
                       <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
                       <td>{driver.leaveEndDate ?formatDate(driver.leaveEndDate) : 'N/A'}</td>
-                      <td className='td-action'>
+                      <td className="td-action">
+                      <div className="button-container">
                         <button className="driver-update-button" onClick={() => openUpdateModal(driver)}>
                           <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update
                         </button>
                         <button className="driver-delete-button" onClick={() => openDeleteModal(driver.id)}>
                           <FaRegTrashAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Delete
                         </button>
-                      </td>
+                      </div>
+                    </td>
                     </tr>
                   ))
                 )}
@@ -361,10 +363,10 @@ const DriverManagement = () => {
           <div className="driver-reservations">
                 <div className="driver-schedlist">
                   <h3>
-                    <RiReservedFill style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />
+                    <RiReservedFill style={{ color: "#782324", marginRight: "15px", marginBottom: "-2px" }} />
                     Driver Reservations
                   </h3>
-                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "350px", marginBottom: "-2px" }} />
+                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "300px", marginBottom: "-2px" }} />
                 <select className="reservation-filter"
                   value={selectedDriverName}
                   onChange={(e) => setSelectedDriverName(e.target.value)}
@@ -523,33 +525,35 @@ const DriverManagement = () => {
           </select>
 
           {updateDriverStatus === 'On leave' && (
-          <div className="leave-date-container">
-            <div>
-              <label htmlFor='leave-start-date'>Start Leave Date</label>
-              <input
-                type="date"
-                id="leave-start-date"
-                value={updateLeaveStartDate}
-                onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
-                className="driver-input"
-                min={minDate}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor='leave-end-date'>End Leave Date</label>
-              <input
-                type="date"
-                id="leave-end-date"
-                value={updateLeaveEndDate}
-                onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
-                className="driver-input"
-                min={minDate}
-                required
-              />
-            </div>
-          </div>
-        )}
+  <div className="leave-date-container">
+    <div>
+      <label htmlFor='leave-start-date'>Start Leave Date</label>
+      <input
+        type="date"
+        id="leave-start-date"
+        value={updateLeaveStartDate}
+        onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
+        className="driver-input"
+        required
+        min={new Date().toISOString().split("T")[0]} // Disable past dates
+      />
+    </div>
+    <div>
+      <label htmlFor='leave-end-date'>End Leave Date</label>
+      <input
+        type="date"
+        id="leave-end-date"
+        value={updateLeaveEndDate}
+        onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
+        className="driver-input"
+        required
+        min={updateLeaveStartDate || new Date().toISOString().split("T")[0]} // Ensure end date is not before start date
+        disabled={!updateLeaveStartDate} // Disable end date until start date is selected
+      />
+    </div>
+  </div>
+)}
+
 
           <button className="add-driver-btn-modal">Update Driver</button>
         </div>

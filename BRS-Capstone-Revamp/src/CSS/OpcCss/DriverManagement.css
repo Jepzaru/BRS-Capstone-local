@@ -23,10 +23,12 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 85px;
+  width: 80px;
   transition: background-color 0.3s;
   background-color: #2a612c;  
   color: white;
+  margin-right: 5px;
+  font-size: 12px;
 }
 
 .complete-button:hover{
@@ -114,7 +116,7 @@ body {
 
 .driver-list-container {
   background-color: #CBC3C3;
-  width: 700px;
+  width: 750px;
   height: 680px;
   border-radius: 10px;
   padding: 20px;
@@ -133,7 +135,7 @@ body {
 
 .driver-reservations {
   background-color: #CBC3C3; 
-  width: 750px; 
+  width: 715px; 
   height: 680px;
   border-radius: 10px;
   padding: 20px;
@@ -148,7 +150,7 @@ body {
   align-items: center;
   justify-content: space-between;
   background-color: white;
-  width: 750px;
+  width: 715px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
@@ -213,6 +215,16 @@ body {
   background-color: #f9f9f9;
 }
 
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between Update and Delete buttons */
+}
+
+.driver-update-button,
+.driver-delete-button {
+  width: 100%; /* Ensures both buttons take the full width of the cell */
+}
 
 .driver-delete-button {
   background-color: #782324;
@@ -222,7 +234,7 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .driver-update-button {
@@ -233,7 +245,7 @@ body {
   padding: 5px 8px;
   cursor: pointer;
   margin-right: 5px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .update-button:hover, .delete-button:hover {
@@ -361,14 +373,12 @@ body {
 }
 
 .leave-date-container {
+  margin-left: 30px;
   display: flex;
-  gap: 20px; 
-
+  gap: 70px; 
+  align-items: center;
 }
 
-.leave-date-container label {
-  margin-right: 5px; 
-}
 
 .driver-input {
   flex: 1;
