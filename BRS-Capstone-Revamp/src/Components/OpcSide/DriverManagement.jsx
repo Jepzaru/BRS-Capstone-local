@@ -42,6 +42,10 @@ const DriverManagement = () => {
   const [selectedDriver, setSelectedDriver] = useState("all"); 
   const [reservations, setReservations] = useState([]); 
   const [selectedDriverName, setSelectedDriverName] = useState("all");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [reservationIdToComplete, setReservationIdToComplete] = useState(null);
   
 
 
@@ -214,44 +218,53 @@ const DriverManagement = () => {
     }
   };
 
-  const handleComplete = async (reservationId) => {
-    const isConfirmed = window.confirm("Are you sure to complete this reservation?");
-    
-    if (!isConfirmed) {
-        return; 
-    }
+  const openConfirmModal = (reservationId) => {
+    setReservationIdToComplete(reservationId);
+    setIsConfirmModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setReservationIdToComplete(null);
+  };
+
+  const closeMessageModal = () => {
+    setIsMessageModalOpen(false);
+    window.location.reload();  
+  };
+
+  const handleComplete = async () => {
+    closeConfirmModal();
 
     try {
-        const response = await fetch(`http://localhost:8080/user/reservations/complete/${reservationId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to complete reservation: ${response.status} ${errorText}`);
+      const response = await fetch(`http://localhost:8080/user/reservations/complete/${reservationIdToComplete}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
+      });
 
-        setReservations(prevReservations => 
-            prevReservations.map(reservation => 
-                reservation.id === reservationId ? { ...reservation, is_completed: 1, status: 'Completed' } : reservation
-            )
-        );
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to complete reservation: ${response.status} ${errorText}`);
+      }
 
-        alert("Reservation completed successfully!");
-        window.location.reload();
+      setReservations(prevReservations =>
+        prevReservations.map(reservation =>
+          reservation.id === reservationIdToComplete ? { ...reservation, is_completed: 1, status: 'Completed' } : reservation
+        )
+      );
+
+      setModalMessage("Reservation completed successfully!");
+      setIsMessageModalOpen(true);
 
     } catch (error) {
-        console.error("Failed to complete reservation:", error);
-        alert(error.message);
+      console.error("Failed to complete reservation:", error);
+      setModalMessage(error.message);
+      setIsMessageModalOpen(true);
     }
-};
-
-
-
+  };
 
   const sortedDrivers = [...drivers].sort((a, b) => {
     switch (sortOption) {
@@ -413,10 +426,40 @@ const DriverManagement = () => {
                     })
                     .map(reservation => (
                       <tr key={reservation.id}>
-                        <td>{reservation.driverName || 'N/A'}</td>
                         <td>
+                          <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>
+                            1
+                          </span>
+                          <span style={{color: "#782324", fontWeight: "700"}}>{reservation.driverName || 'N/A'}</span>
+                          {reservation.reservedVehicles && reservation.reservedVehicles.length > 0 && (
+                            <div style={{ marginTop: "5px" }}>
+                              {reservation.reservedVehicles.map((vehicle, index) => (
+                                <div key={index + 1} style={{marginTop: "5px"}}>
+                                  <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>{index + 2}</span> 
+                                  <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.driverName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          </td>
+                        <td>
+                          <div>
+                          <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>
+                            1
+                          </span>
                           <span style={{ color: "#782324", fontWeight: "700" }}>{reservation.vehicleType || 'N/A'}</span> : 
-                          <span style={{ color: "green", fontWeight: "700" }}>{reservation.plateNumber || 'N/A'}</span>
+                            <span style={{ color: "green", fontWeight: "700" }}> {reservation.plateNumber || 'N/A'}</span>
+                          </div>
+                          {reservation.reservedVehicles && reservation.reservedVehicles.length > 0 && (
+                            <div style={{ marginTop: "5px" }}>
+                              {reservation.reservedVehicles.map((vehicle, index) => (
+                                <div key={index + 1}>
+                                  <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>{index + 2}</span> 
+                                  <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType}</span> : <span style={{ color: "green", fontWeight: "700" }}>{vehicle.plateNumber}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </td>
                         <td>{reservation.schedule ? new Date(reservation.schedule).toLocaleDateString() : 'N/A'}</td>
                         <td>{reservation.departureTime || 'N/A'}</td>
@@ -426,7 +469,7 @@ const DriverManagement = () => {
                           {reservation.isCompleted === true ? (
                             <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>
                           ) : (
-                            <button className="complete-button" onClick={() => handleComplete(reservation.id)}>Complete</button>
+                            <button className="complete-button" onClick={() => openConfirmModal(reservation.id)}>Complete</button>
                           )}
                         </td>
                       </tr>
@@ -545,36 +588,34 @@ const DriverManagement = () => {
           </select>
 
           {updateDriverStatus === 'On leave' && (
-  <div className="leave-date-container">
-    <div>
-      <label htmlFor='leave-start-date'>Start Leave Date</label>
-      <input
-        type="date"
-        id="leave-start-date"
-        value={updateLeaveStartDate}
-        onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
-        className="driver-input"
-        required
-        min={new Date().toISOString().split("T")[0]} 
-      />
-    </div>
-    <div>
-      <label htmlFor='leave-end-date'>End Leave Date</label>
-      <input
-        type="date"
-        id="leave-end-date"
-        value={updateLeaveEndDate}
-        onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
-        className="driver-input"
-        required
-        min={updateLeaveStartDate || new Date().toISOString().split("T")[0]} 
-        disabled={!updateLeaveStartDate} 
-      />
-    </div>
-  </div>
-)}
-
-
+            <div className="leave-date-container">
+              <div>
+                <label htmlFor='leave-start-date'>Start Leave Date</label>
+                <input
+                  type="date"
+                  id="leave-start-date"
+                  value={updateLeaveStartDate}
+                  onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
+                  className="driver-input"
+                  required
+                  min={new Date().toISOString().split("T")[0]} 
+                />
+              </div>
+              <div>
+                <label htmlFor='leave-end-date'>End Leave Date</label>
+                <input
+                  type="date"
+                  id="leave-end-date"
+                  value={updateLeaveEndDate}
+                  onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
+                  className="driver-input"
+                  required
+                  min={updateLeaveStartDate || new Date().toISOString().split("T")[0]} 
+                  disabled={!updateLeaveStartDate} 
+                />
+              </div>
+            </div>
+          )}
           <button className="add-driver-btn-modal">Update Driver</button>
         </div>
       </form>
@@ -591,6 +632,33 @@ const DriverManagement = () => {
               <button className="delete-button-confirm" onClick={() => handleDeleteDriver(selectedDriverId)}>Delete</button>
             </div>
           </div>
+        </div>
+      )}
+
+{isConfirmModalOpen && (
+  <div className="driver-modal-overlay">
+        <div className="confirm-modal">
+          <div className="confirm-modal-content">
+            <h2>Are you sure to complete this reservation?</h2>
+            <div className="driver-modal-buttons">
+            <button className="cancel-button" onClick={closeConfirmModal}>No</button>
+            <button className="yes-button-confirm" onClick={handleComplete}>Yes</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
+
+{isMessageModalOpen && (
+  <div className="driver-modal-overlay">
+        <div className="msg-modal">
+          <div className="msg-modal-content">
+            <h2>{modalMessage}</h2>
+            <div className="driver-modal-buttons">
+            <button className="yes-button-confirm" onClick={closeMessageModal}>OK</button>
+          </div>
+          </div>
+        </div>
         </div>
       )}
     </div>
