@@ -20,6 +20,7 @@ public class VehicleEntity {
   private String status;
   private LocalDate maintenanceStartDate;
   private LocalDate maintenanceEndDate;
+  private String maintenanceDetails;
 
   public int getId() {
     return id;
@@ -77,13 +78,22 @@ public class VehicleEntity {
     this.maintenanceEndDate = maintenanceEndDate;
   }
 
-  public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate) {
+  public String getMaintenanceDetails() {
+    return maintenanceDetails;
+}
+
+  public void setMaintenanceDetails(String maintenanceDetails) {
+    this.maintenanceDetails = maintenanceDetails;
+}
+
+  public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, String maintenanceDetails) {
     this.vehicleType = vehicleType;
     this.plateNumber = plateNumber;
     this.capacity = capacity;
     this.status = status;
     this.maintenanceStartDate = maintenanceStartDate;
     this.maintenanceEndDate = maintenanceEndDate;
+    this.maintenanceDetails = maintenanceDetails;
   }
 
   public VehicleEntity() {

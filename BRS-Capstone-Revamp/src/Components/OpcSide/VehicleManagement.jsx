@@ -36,6 +36,9 @@ const VehicleManagement = () => {
   const [filterType, setFilterType] = useState("all");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [vehicleToComplete, setVehicleToComplete] = useState(null);
+  const [updateMaintenanceDetails, setUpdateMaintenanceDetails] = useState('');
+  const [maintenanceDetails, setMaintenanceDetails] = useState([]);
+  
 
   const token = localStorage.getItem('token');
 
@@ -59,6 +62,25 @@ const VehicleManagement = () => {
     };
 
     fetchVehicles();
+  }, [token]);
+
+  useEffect(() => {
+    const fetchMaintenanceDetails = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/opc/vehicle/maintenance-details', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch maintenance details');
+        }
+        const data = await response.json();
+        setMaintenanceDetails(data);
+      } catch (error) {
+        console.error('Error fetching maintenance details:', error);
+      }
+    };
+
+    fetchMaintenanceDetails();
   }, [token]);
 
   const handleSortChange = useCallback((event) => {
@@ -211,6 +233,7 @@ const VehicleManagement = () => {
         status: updateStatus,
         maintenanceStartDate: updateStatus === 'Maintenance' ? updateMaintenanceStartDate : null,
         maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
+        maintenanceDetails: updateStatus === 'Maintenance' ? updateMaintenanceDetails : null, 
       };
   
       const response = await fetch(`http://localhost:8080/opc/vehicle/update/${vehicleId}`, {
@@ -240,7 +263,7 @@ const VehicleManagement = () => {
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
-  };
+};
   
   
   const handleDeleteVehicle = async () => {
@@ -356,11 +379,11 @@ const VehicleManagement = () => {
             </div>
             </div>
             
-            <div className="vehicle-reservations">
-              <div className="vehicle-schedlist2">
-                <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
-                <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
-                <select
+              <div className="vehicle-reservations">
+      <div className="vehicle-schedlist2">
+        <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
+        <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
+        <select
                   className="reservation-filter"
                   onChange={(e) => setFilterType(e.target.value)}
                   value={filterType}
@@ -370,64 +393,63 @@ const VehicleManagement = () => {
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
-              </div>
-              <table className="vehicle-table">
-                <thead>
-                  <tr>
-                    <th>Vehicle</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vehicles
-                    .filter(vehicle => vehicle.status === 'Maintenance' && (filterType === 'all' || vehicle.vehicleType === filterType))
-                    .map(vehicle => {
-                      const startDate = vehicle.maintenanceStartDate
-                        ? new Date(vehicle.maintenanceStartDate).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : 'N/A';
+      </div>
+      <table className="vehicle-table">
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Scheduled Dates</th>
+            <th>Maintenance Details</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {maintenanceDetails
+            .filter(detail => filterType === 'all' || detail.vehicleType === filterType)
+            .map(detail => {
+              const startDate = detail.maintenanceStartDate
+                ? new Date(detail.maintenanceStartDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
+                : 'N/A';
 
-                      const endDate = vehicle.maintenanceEndDate
-                        ? new Date(vehicle.maintenanceEndDate).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : 'N/A';
+              const endDate = detail.maintenanceEndDate
+                ? new Date(detail.maintenanceEndDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
+                : 'N/A';
 
-                      return (
-                        <tr key={vehicle.id}>
-                          <td>{vehicle.vehicleType}</td>
-                          <td>{startDate}</td>
-                          <td>{endDate}</td>
-                          <td>
-                          <button 
-                          className='complete-btn' 
-                          onClick={() => {
-                            setVehicleToComplete(vehicle.id); 
-                            setIsConfirmModalOpen(true); 
-                          }}
-                        >
-                          <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "10px" }} />Complete
-                        </button>
-
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  {vehicles.filter(vehicle => vehicle.status === 'Maintenance' && (filterType === 'all' || vehicle.vehicleType === filterType)).length === 0 && (
-                    <tr>
-                      <td colSpan="4">No vehicles currently under maintenance</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+              return (
+                <tr key={detail.id}>
+                  <td>{detail.vehicleType}</td>
+                  <td><span style={{ color: "#782324", fontWeight: "700"}}>{startDate}</span> - <span style={{ color: "green", fontWeight: "700"}}>{endDate}</span></td>
+                  <td>{detail.maintenanceDetails}</td>
+                  <td>
+                    <button 
+                      className='complete-btn' 
+                      onClick={() => {
+                        setVehicleToComplete(detail.id); 
+                        setIsConfirmModalOpen(true); 
+                      }}
+                    >
+                      <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "10px" }} />Complete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          {maintenanceDetails.filter(detail => filterType === 'all' || detail.vehicleType === filterType).length === 0 && (
+            <tr>
+              <td colSpan="4">No vehicles currently under maintenance</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
@@ -475,101 +497,118 @@ const VehicleManagement = () => {
         </div>
       )}
 
-      {isUpdateModalOpen && (
-        <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-          <form action="" onSubmit={handleUpdateVehicle}>
-            <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-              <h2>Update Vehicle 
-                <button className="close-vehicle-btn" onClick={(e) => {
-                  e.preventDefault(); 
-                  closeUpdateModal();
-                }}>
-                  <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
-                </button>
-              </h2>
-              <div className='add-vehicle-input'>
-                <label htmlFor='vehicle-name'>Vehicle Name</label>
-                <input
-                  type="text"
-                  placeholder="Vehicle Type"
-                  value={updateVehicleType}
-                  onChange={(e) => setUpdateVehicleType(e.target.value)}
-                  required
-                />
-                <label htmlFor='vehicle-plate-number'>Plate Number</label>
-                <input
-                  type="text"
-                  placeholder="Plate Number"
-                  value={updatePlateNumber}
-                  onChange={(e) => setUpdatePlateNumber(e.target.value)}
-                  required
-                />
-                <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
-                <input
-                  type="number"
-                  placeholder="Maximum Capacity"
-                  value={updateCapacity}
-                  min="1"
-                  onChange={(e) => setUpdateCapacity(e.target.value)}
-                  required
-                />
-                <label htmlFor='vehicle-status'>Status</label>
-                <select
-                  className="vehicle-input"
-                  value={updateStatus}
-                  onChange={(e) => {
-                    setUpdateStatus(e.target.value);
-                    if (e.target.value !== 'Maintenance') {
-                      setUpdateMaintenanceStartDate('');
-                      setUpdateMaintenanceEndDate('');
-                    }
-                  }}
-                  required
-                >
-                  <option value="Available">Available</option>
-                  <option value="Maintenance">Maintenance</option>
-                </select>
+{isUpdateModalOpen && (
+  <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+    <form action="" onSubmit={handleUpdateVehicle}>
+      <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+        <h2>Update Vehicle 
+          <button className="close-vehicle-btn" onClick={(e) => {
+            e.preventDefault(); 
+            closeUpdateModal();
+          }}>
+            <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
+          </button>
+        </h2>
+        <div className='add-vehicle-input'>
+          <label htmlFor='vehicle-name'>Vehicle Name</label>
+          <input
+            type="text"
+            id='vehicle-name' 
+            placeholder="Vehicle Type"
+            value={updateVehicleType}
+            onChange={(e) => setUpdateVehicleType(e.target.value)}
+            required
+          />
+          <label htmlFor='vehicle-plate-number'>Plate Number</label>
+          <input
+            type="text"
+            id='vehicle-plate-number' 
+            placeholder="Plate Number"
+            value={updatePlateNumber}
+            onChange={(e) => setUpdatePlateNumber(e.target.value)}
+            required
+          />
+          <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
+          <input
+            type="number"
+            id='vehicle-capacity' 
+            placeholder="Maximum Capacity"
+            value={updateCapacity}
+            min="1"
+            onChange={(e) => setUpdateCapacity(Number(e.target.value))} 
+            required
+          />
+          <label htmlFor='vehicle-status'>Status</label>
+          <select
+            className="vehicle-input"
+            value={updateStatus}
+            onChange={(e) => {
+              setUpdateStatus(e.target.value);
+              if (e.target.value !== 'Maintenance') {
+                setUpdateMaintenanceStartDate('');
+                setUpdateMaintenanceEndDate('');
+              }
+            }}
+            required
+          >
+            <option value="Available">Available</option>
+            <option value="Maintenance">Maintenance</option>
+          </select>
 
-                {updateStatus === 'Maintenance' && (
-                  <div className="maintenance-date-container">
-                    <div>
-                    <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
-                    <input
-                      type="date"
-                      id="maintenance-start-date"
-                      value={updateMaintenanceStartDate}
-                      onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
-                      className="vehicle-input"
-                      required
-                      min={new Date().toISOString().split("T")[0]} 
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
-                    <input
-                      type="date"
-                      id="maintenance-end-date"
-                      value={updateMaintenanceEndDate}
-                      onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
-                      className="vehicle-input"
-                      min={updateMaintenanceStartDate ? updateMaintenanceStartDate : new Date().toISOString().split("T")[0]} 
-                      required
-                      disabled={!updateMaintenanceStartDate} 
-                    />
-                  </div>
-
-                  </div>
-                )}
-              </div>
-              <div className='add-vehicle-buttons'>
-                <button className="add-vehicle-submit-btn">Update Vehicle</button>
-              </div>
-              {successMessage && <p className="success-message">{successMessage}</p>}
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
+          {updateStatus === 'Maintenance' && (
+            <div className='add-vehicle-input'>
+              <label htmlFor='maintenance-details'>Maintenance Details</label>
+              <input
+                type="text"
+                id="maintenance-details"
+                placeholder="Enter Maintenance Details"
+                value={updateMaintenanceDetails} 
+                onChange={(e) => setUpdateMaintenanceDetails(e.target.value)} 
+                required
+              />
             </div>
-          </form>
+          )}
+
+          {updateStatus === 'Maintenance' && (
+            <div className="maintenance-date-container">
+              <div>
+                <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
+                <input
+                  type="date"
+                  id="maintenance-start-date"
+                  value={updateMaintenanceStartDate}
+                  onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
+                  className="vehicle-input"
+                  required
+                  min={new Date().toISOString().split("T")[0]} 
+                />
+              </div>
+              <div>
+                <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
+                <input
+                  type="date"
+                  id="maintenance-end-date"
+                  value={updateMaintenanceEndDate}
+                  onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
+                  className="vehicle-input"
+                  min={updateMaintenanceStartDate ? updateMaintenanceStartDate : new Date().toISOString().split("T")[0]} 
+                  required
+                  disabled={!updateMaintenanceStartDate} 
+                />
+              </div>
+            </div>
+          )}
+          
         </div>
-      )}
+        <div className='add-vehicle-buttons'>
+          <button className="add-vehicle-submit-btn">Update Vehicle</button>
+        </div>
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </div>
+    </form>
+  </div>
+)}
 
       {isDeleteModalOpen && (
         <div className="delete-modal-overlay">
