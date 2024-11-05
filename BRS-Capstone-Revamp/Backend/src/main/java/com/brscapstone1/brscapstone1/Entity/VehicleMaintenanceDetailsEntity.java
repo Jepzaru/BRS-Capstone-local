@@ -18,19 +18,23 @@ public class VehicleMaintenanceDetailsEntity {
 
     private String vehicleType;
     private String maintenanceDetails;
+    private String status;
     private LocalDate maintenanceStartDate;
     private LocalDate maintenanceEndDate;
+    private Boolean isCompleted = false;
 
     public VehicleMaintenanceDetailsEntity() {
         super();
     }
 
-    public VehicleMaintenanceDetailsEntity(VehicleEntity vehicle, String vehicleType, String maintenanceDetails, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate) {
+    public VehicleMaintenanceDetailsEntity(VehicleEntity vehicle, String vehicleType, String maintenanceDetails, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, Boolean isCompleted) {
         this.vehicle = vehicle;
         this.vehicleType = vehicleType;
         this.maintenanceDetails = maintenanceDetails;
+        this.status = status;
         this.maintenanceStartDate = maintenanceStartDate;
         this.maintenanceEndDate = maintenanceEndDate;
+        this.isCompleted = isCompleted;
     }
 
     public int getId() {
@@ -65,6 +69,14 @@ public class VehicleMaintenanceDetailsEntity {
         this.maintenanceDetails = maintenanceDetails;
     }
 
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public LocalDate getMaintenanceStartDate() {
         return maintenanceStartDate;
     }
@@ -79,5 +91,13 @@ public class VehicleMaintenanceDetailsEntity {
 
     public void setMaintenanceEndDate(LocalDate maintenanceEndDate) {
         this.maintenanceEndDate = maintenanceEndDate;
+    }
+
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+    
+    public void setIsCompleted(Boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

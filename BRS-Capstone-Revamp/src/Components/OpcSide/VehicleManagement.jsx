@@ -38,7 +38,7 @@ const VehicleManagement = () => {
   const [vehicleToComplete, setVehicleToComplete] = useState(null);
   const [updateMaintenanceDetails, setUpdateMaintenanceDetails] = useState('');
   const [maintenanceDetails, setMaintenanceDetails] = useState([]);
-  
+
 
   const token = localStorage.getItem('token');
 
@@ -74,14 +74,37 @@ const VehicleManagement = () => {
           throw new Error('Failed to fetch maintenance details');
         }
         const data = await response.json();
-        setMaintenanceDetails(data);
+        setMaintenanceDetails(data); 
       } catch (error) {
         console.error('Error fetching maintenance details:', error);
       }
     };
-
+  
     fetchMaintenanceDetails();
   }, [token]);
+  
+  const completeMaintenance = async (vehicleId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/opc/vehicle/maintenance-status/${vehicleId}?isCompleted=true`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, 
+        },
+      });
+  
+      if (response.ok) {
+        await response.json(); 
+  
+        fetchMaintenanceDetails(); 
+        setIsConfirmModalOpen(false);
+      } else {
+        console.error('Failed to update maintenance status');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const handleSortChange = useCallback((event) => {
     setSortOption(event.target.value);
@@ -256,9 +279,11 @@ const VehicleManagement = () => {
           vehicle.id === vehicleId ? updatedVehicle : vehicle
         )
       );
-  
+      
       setSuccessMessage('Vehicle updated successfully!');
       closeUpdateModal();
+
+      window.location.reload();
   
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
@@ -379,7 +404,7 @@ const VehicleManagement = () => {
             </div>
             </div>
             
-              <div className="vehicle-reservations">
+    <div className="vehicle-reservations">
       <div className="vehicle-schedlist2">
         <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
         <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
@@ -428,16 +453,20 @@ const VehicleManagement = () => {
                   <td>{detail.vehicleType}</td>
                   <td><span style={{ color: "#782324", fontWeight: "700"}}>{startDate}</span> - <span style={{ color: "green", fontWeight: "700"}}>{endDate}</span></td>
                   <td>{detail.maintenanceDetails}</td>
-                  <td>
-                    <button 
-                      className='complete-btn' 
-                      onClick={() => {
-                        setVehicleToComplete(detail.id); 
-                        setIsConfirmModalOpen(true); 
-                      }}
-                    >
-                      <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "10px" }} />Complete
-                    </button>
+                  <td style={{textAlign:"center"}}>
+                    {detail.isCompleted === true ? ( 
+                      <span style={{ color: "green", fontWeight: "bold" }}>{detail.status}</span>
+                    ) : (
+                      <button 
+                        className="complete-btn" 
+                        onClick={() => {
+                          setVehicleToComplete(detail.id); 
+                          setIsConfirmModalOpen(true);
+                        }}
+                      >
+                        <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "10px" }} />Complete
+                      </button>
+                    )}
                   </td>
                 </tr>
               );
@@ -631,11 +660,9 @@ const VehicleManagement = () => {
         <button 
           className="confirm-button" 
           onClick={() => {
-            console.log("Complete button clicked.");
-            setUpdateStatus("Available"); 
-            setSelectedVehicleId(vehicleToComplete);
-            handleUpdateVehicle({ preventDefault: () => {} }, vehicleToComplete); 
+            completeMaintenance(vehicleToComplete); 
             setIsConfirmModalOpen(false); 
+            window.location.reload(); 
           }}
         >
           Complete

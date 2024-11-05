@@ -38,4 +38,9 @@ public class VehicleController {
     public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
         return vehicleService.getAllMaintenanceDetails();
     }
+
+    @PutMapping("/opc/vehicle/maintenance-status/{id}")
+public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(@PathVariable int id, @RequestParam Boolean isCompleted) {
+    return vehicleService.updateMaintenanceStatus(id, isCompleted);
+}
 }

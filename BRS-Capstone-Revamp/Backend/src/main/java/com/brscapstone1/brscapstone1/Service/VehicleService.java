@@ -55,8 +55,10 @@ public class VehicleService {
                     vehicle, 
                     vehicle.getVehicleType(), 
                     newVehicle.getMaintenanceDetails(),
+                    "Pending", 
                     vehicle.getMaintenanceStartDate(),
-                    vehicle.getMaintenanceEndDate()
+                    vehicle.getMaintenanceEndDate(),
+                    false 
                 );
                 maintenanceDetailsRepository.save(maintenanceDetails); 
             } else {
@@ -73,8 +75,29 @@ public class VehicleService {
     }
 }
 
+
 public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
   return maintenanceDetailsRepository.findAll();
+}
+
+public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(int id, Boolean isCompleted) {
+  VehicleMaintenanceDetailsEntity maintenanceDetails = maintenanceDetailsRepository.findById(id)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maintenance record with id " + id + " does not exist"));
+
+  maintenanceDetails.setIsCompleted(isCompleted);
+  if (isCompleted) {
+      maintenanceDetails.setStatus("Completed");
+
+      VehicleEntity vehicle = maintenanceDetails.getVehicle();
+      if (vehicle != null) {
+          vehicle.setStatus("Available");
+          vehicleRepository.save(vehicle); 
+      }
+  } else {
+      maintenanceDetails.setStatus("Pending");
+  }
+
+  return maintenanceDetailsRepository.save(maintenanceDetails);
 }
 
   public String delete(int id){
