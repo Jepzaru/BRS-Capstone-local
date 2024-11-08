@@ -19,12 +19,14 @@ const OpcRequests = () => {
   const [feedback, setFeedback] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
+
 
   
 const token = localStorage.getItem('token');
 
 const fetchHeadIsApprovedRequests = async () => {
-  setLoading(true); 
+  setLoading(true);
   try {
     const response = await fetch("http://localhost:8080/reservations/head-approved", {
       headers: { "Authorization": `Bearer ${token}` },
@@ -43,17 +45,21 @@ const fetchHeadIsApprovedRequests = async () => {
         );
       });
       setRequests(filteredRequests);
+      setRequestCount(filteredRequests.length);  // Set the request count
     } else {
       console.error("Unexpected data format:", data);
       setRequests([]);
+      setRequestCount(0);  // Set the request count to 0 if no requests
     }
   } catch (error) {
     console.error("Failed to fetch requests.", error);
     setRequests([]);
+    setRequestCount(0);  // Set the request count to 0 on error
   } finally {
-    setLoading(false); 
+    setLoading(false);
   }
 };
+
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
@@ -168,7 +174,7 @@ const fetchHeadIsApprovedRequests = async () => {
 
   const handleReject = async () => {
     if (!feedback.trim()) {
-      alert('Please provide feedback.');
+      alert('Please provide reason of rejection.');
       return;
     }
 
@@ -307,7 +313,7 @@ const fetchHeadIsApprovedRequests = async () => {
     <div className="opcrequest">
       <Header />
       <div className="opc-request-content1">
-        <SideNavbar />
+        <SideNavbar requestCount={requestCount} />
         <div className="opc1">
           <div className="header-container">
             <h1><FaSwatchbook style={{ marginRight: "15px", color: "#782324" }} />Requests</h1>
@@ -636,7 +642,7 @@ const fetchHeadIsApprovedRequests = async () => {
                 id="feedback-input"
                 className="feedback-input"
                 type="text"
-                placeholder="Enter feedback"
+                placeholder="Enter reason of rejection"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
               />

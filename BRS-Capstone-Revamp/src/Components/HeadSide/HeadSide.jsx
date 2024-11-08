@@ -17,24 +17,36 @@ const HeadSide = () => {
   const [fileUrl, setFileUrl] = useState('');
   const token = localStorage.getItem('token');
   const [errorMessage, setErrorMessage] = useState(''); 
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
 
   const fetchRequestsData = useCallback(async () => {
     try {
-      const department = localStorage.getItem('department');
       const response = await fetch("http://localhost:8080/reservations/getAll", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
       const matchingReservations = data.filter(reservation =>
-        reservation.department === department && !reservation.headIsApproved && !reservation.rejected
-      ).sort((a, b) => new Date(b.schedule) - new Date(a.schedule)); 
-
+        reservation.department === localStorage.getItem('department') && 
+        !reservation.headIsApproved && 
+        !reservation.rejected
+      );
+  
+      // Save the pending request count to localStorage
+      localStorage.setItem('pendingRequestCount', matchingReservations.length);
+  
       setRequests(matchingReservations);
     } catch (error) {
       console.error("Failed to fetch requests.", error);
     }
   }, [token]);
+  
 
+  useEffect(() => {
+    fetchRequestsData();
+  }, [fetchRequestsData]);
+
+
+  
   const handleApproveRequests = async () => {
     try {
       const reservationData = { headIsApproved: true };
@@ -61,7 +73,7 @@ const HeadSide = () => {
 
   const handleRejectRequest = async () => {
     if (!feedback.trim()) {
-      alert('Please provide feedback.');
+      alert('Please provide reason of rejection.');
       return;
     }
 
@@ -159,7 +171,7 @@ const HeadSide = () => {
     <div className="head">
       <Header />
       <div className="head-content1">
-        <SideNavbar />
+        <SideNavbar pendingRequestCount={request.length}/>
         <div className="head1">
           <div className="header-container">
             <h1><FaSwatchbook style={{ marginRight: "15px", color: "#782324" }} />Department Requests</h1>
@@ -282,7 +294,7 @@ const HeadSide = () => {
                 id="feedback-input"
                 className="feedback-input"
                 type="text"
-                placeholder="Enter feedback"
+                placeholder="Enter reason of rejection"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
               />
@@ -297,7 +309,7 @@ const HeadSide = () => {
             >
               {modalAction === 'approve' ? 'Approve' : 'Reject'}
             </button>
-            <button className="modal-cancel-button" onClick={closeModal}>Cancel</button>
+            <button className="modal-close-button" onClick={closeModal}>Cancel</button>
           </div>
         </div>
       </div>
