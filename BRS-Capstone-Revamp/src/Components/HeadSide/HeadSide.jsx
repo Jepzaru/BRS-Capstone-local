@@ -17,7 +17,6 @@ const HeadSide = () => {
   const [fileUrl, setFileUrl] = useState('');
   const token = localStorage.getItem('token');
   const [errorMessage, setErrorMessage] = useState(''); 
-  const [pendingRequestCount, setPendingRequestCount] = useState(0);
 
   const fetchRequestsData = useCallback(async () => {
     try {

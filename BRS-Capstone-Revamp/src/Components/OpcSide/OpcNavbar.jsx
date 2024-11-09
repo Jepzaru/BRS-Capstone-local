@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import '../../CSS/UserCss/SideNavbar.css';
 import ToggleButton from '../../Components/UserSide/ToggleButton';
 import { MdDashboard } from "react-icons/md";
@@ -8,14 +9,29 @@ import { GiCarSeat } from "react-icons/gi";
 import { FaGear } from "react-icons/fa6";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { FaCalendarDay } from "react-icons/fa";
-import { NavLink } from 'react-router-dom';
 
-const OpcNavbar = ({ requestCount }) => {
+const OpcNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+
+  // Use useEffect to get the saved requestCount from localStorage on initial load
+  useEffect(() => {
+    const savedCount = localStorage.getItem('requestCount');
+    if (savedCount) {
+      setRequestCount(parseInt(savedCount, 10));
+    }
+  }, []);
+
+  // Use useEffect to save requestCount in localStorage whenever it changes
+  useEffect(() => {
+    if (requestCount > 0) {
+      localStorage.setItem('requestCount', requestCount);
+    }
+  }, [requestCount]);
 
   return (
     <>
@@ -31,7 +47,7 @@ const OpcNavbar = ({ requestCount }) => {
             <NavLink to="/opc-requests" activeClassName="active-link">
               <FaFileLines style={{ marginRight: "15px", marginBottom: "-2px" }} />
               Requests
-              {requestCount > 0 && <span className="request-count">{requestCount}</span>}
+              {requestCount > 0 && <span className="notification-badge">{requestCount}</span>}
             </NavLink>
           </li>
           <li>

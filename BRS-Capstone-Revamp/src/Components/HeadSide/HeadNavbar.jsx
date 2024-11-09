@@ -13,7 +13,6 @@ const HeadNavbar = () => {
     setIsOpen(!isOpen);
   };
 
-  // Load notification count from localStorage
   useEffect(() => {
     const savedCount = localStorage.getItem('pendingRequestCount');
     if (savedCount) {
@@ -21,7 +20,6 @@ const HeadNavbar = () => {
     }
   }, []);
 
-  // Update notification count in localStorage whenever it changes
   useEffect(() => {
     if (pendingRequestCount > 0) {
       localStorage.setItem('pendingRequestCount', pendingRequestCount);

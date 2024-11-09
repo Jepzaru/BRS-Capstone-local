@@ -44,21 +44,32 @@ const fetchHeadIsApprovedRequests = async () => {
           (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
         );
       });
+
+      const count = filteredRequests.length;
       setRequests(filteredRequests);
-      setRequestCount(filteredRequests.length);  // Set the request count
+      setRequestCount(count); 
+
+      localStorage.setItem('requestCount', count);
+      
+      console.log(count);  
     } else {
       console.error("Unexpected data format:", data);
       setRequests([]);
-      setRequestCount(0);  // Set the request count to 0 if no requests
+      setRequestCount(0);  
+
+      localStorage.setItem('requestCount', 0);
     }
   } catch (error) {
     console.error("Failed to fetch requests.", error);
     setRequests([]);
-    setRequestCount(0);  // Set the request count to 0 on error
+    setRequestCount(0);  
+
+    localStorage.setItem('requestCount', 0);
   } finally {
     setLoading(false);
   }
 };
+
 
 
   useEffect(() => {
