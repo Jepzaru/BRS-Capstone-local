@@ -96,7 +96,6 @@ const closeErrorModal = () => {
         return;
     }
 
-    // Check if email already exists
     const emailExists = users.some(user => user.email === email);
     if (emailExists) {
         openErrorModal("This email is already in use.");
@@ -159,7 +158,6 @@ const handleUpdateAccount = async (event) => {
   const formData = new FormData(event.target);
   const updatedEmail = formData.get('email');
 
-  // Check if the email already exists in another account
   const emailExists = users.some(user => user.email === updatedEmail && user.id !== selectedUser.id);
   if (emailExists) {
       openErrorModal("This email is already in use.");

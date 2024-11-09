@@ -16,7 +16,7 @@ import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
 import { FaBook, FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
