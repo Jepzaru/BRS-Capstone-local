@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import '../../CSS/UserCss/SideNavbar.css';
 import ToggleButton from '../../Components/UserSide/ToggleButton';
 import { FaBook } from "react-icons/fa";
-import { FaFileCircleCheck } from "react-icons/fa6";
-import { FaGear } from "react-icons/fa6";
+import { FaFileCircleCheck, FaGear } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 
-const HeadNavbar = () => {
+const HeadNavbar = ({ pendingRequestCount }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
@@ -20,7 +19,11 @@ const HeadNavbar = () => {
         <ul>
           <li>
             <NavLink to="/head-side" activeClassName="active-link">
-              <FaBook style={{ marginRight: "15px", marginBottom: "-2px" }} />Requests
+              <FaBook style={{ marginRight: "15px", marginBottom: "-2px" }} />
+              Requests
+              {pendingRequestCount > 0 && (
+                <span className="notification-badge">{pendingRequestCount}</span>
+              )}
             </NavLink>
           </li>
           <li>

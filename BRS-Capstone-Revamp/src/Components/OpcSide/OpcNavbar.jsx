@@ -10,7 +10,7 @@ import { FaClipboardCheck } from "react-icons/fa6";
 import { FaCalendarDay } from "react-icons/fa";
 import { NavLink } from 'react-router-dom';
 
-const OpcNavbar = () => {
+const OpcNavbar = ({ requestCount }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
@@ -29,23 +29,24 @@ const OpcNavbar = () => {
           </li>
           <li>
             <NavLink to="/opc-requests" activeClassName="active-link">
-              < FaFileLines style={{ marginRight: "15px", marginBottom: "-2px" }} />Requests
+              <FaFileLines style={{ marginRight: "15px", marginBottom: "-2px" }} />
+              Requests
+              {requestCount > 0 && <span className="request-count">{requestCount}</span>}
             </NavLink>
           </li>
           <li>
             <NavLink to="/opc-approved-requests" activeClassName="active-link">
-              < FaClipboardCheck style={{ marginRight: "15px", marginBottom: "-2px" }} />Approved Requests
+              <FaClipboardCheck style={{ marginRight: "15px", marginBottom: "-2px" }} />Approved Requests
             </NavLink>
           </li>
           <li>
             <NavLink to="/opc-bigcalendar" activeClassName="active-link">
-              < FaCalendarDay style={{ marginRight: "15px", marginBottom: "-2px" }} />Calendar Events
+              <FaCalendarDay style={{ marginRight: "15px", marginBottom: "-2px" }} />Calendar Events
             </NavLink>
           </li>
-
           <li>
             <NavLink to="/vehicle-management" activeClassName="active-link">
-              <FaBus  style={{ marginRight: "15px", marginBottom: "-2px" }} />Vehicle Management
+              <FaBus style={{ marginRight: "15px", marginBottom: "-2px" }} />Vehicle Management
             </NavLink>
           </li>
           <li>

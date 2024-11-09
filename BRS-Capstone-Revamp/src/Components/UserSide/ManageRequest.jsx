@@ -171,9 +171,9 @@ const ManageRequest = () => {
                                         <th>Departure Time</th>
                                         <th>Pick Up Time</th>
                                         <th>Department</th>
-                                        <th className="reason-column">Reason</th>
+                                        <th className="reason-column">Purpose</th>
                                         <th>Status</th>
-                                        <th>Feedback</th>
+                                        <th>Reason of Rejection</th>
                                     </tr>
                                 </thead>
                                 <tbody>
