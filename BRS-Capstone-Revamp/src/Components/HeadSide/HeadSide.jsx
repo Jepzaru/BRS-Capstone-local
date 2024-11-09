@@ -31,7 +31,6 @@ const HeadSide = () => {
         !reservation.rejected
       );
   
-      // Save the pending request count to localStorage
       localStorage.setItem('pendingRequestCount', matchingReservations.length);
   
       setRequests(matchingReservations);

@@ -396,6 +396,7 @@ const Reservation = () => {
                           borderRadius: "20px",
                           padding: "3px",
                           marginBottom: "-5px",
+                          marginRight: "5px"
                         }}
                       />
                       No. of Passengers:
@@ -538,7 +539,7 @@ const Reservation = () => {
                 </div>
                   <div className="form-group">
                     <label htmlFor="addedVehicle">
-                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
+                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} /> 
                       Vehicle Added:
                       <button 
                         type="button"
@@ -572,9 +573,6 @@ const Reservation = () => {
             )}
             <div className="summary-container">
               <h2>Reservation Summary</h2>
-              <div className="summary-item">
-                <strong>Reservation Type:</strong> 
-              </div>
               <div className="summary-item">
                 <strong>Trip Type:</strong> {tripType === 'oneWay' ? 'One Way' : 'Round Trip'}
               </div>
