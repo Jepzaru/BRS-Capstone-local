@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import '../CSS/UserCss/Login.css';
 import { Link } from 'react-router-dom';
 import { FaUser, FaLock, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle } from "react-icons/io5";
 import { LiaBarcodeSolid } from "react-icons/lia";
 import logoImage from "../Images/citlogo1.png";
 import logoImage1 from "../Images/citbglogo.png";
@@ -17,6 +19,7 @@ const ForgotPassword = () => {
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleClear = () => {
         setEmail('');
@@ -26,12 +29,14 @@ const ForgotPassword = () => {
         setShowVerificationField(false);
         setShowPasswordFields(false);
         setErrorMessage('');
+        setSnackbarMessage('');
     };
 
     const handleSendCode = async (e) => {
         e.preventDefault();
         setLoading(true);
         setErrorMessage('');
+        setSnackbarMessage('');
         try {
             const response = await fetch('http://localhost:8080/api/email/send', {
                 method: 'POST',
@@ -41,8 +46,18 @@ const ForgotPassword = () => {
 
             if (!response.ok) throw new Error('Failed to send verification code');
             setShowVerificationField(true);
+            setSnackbarMessage('Verification code successfully sent!');
+
+            setTimeout(() => {
+                setSnackbarMessage('');
+            }, 5000);
+
         } catch (error) {
             setErrorMessage(error.message);
+
+            setTimeout(() => {
+                setErrorMessage('');
+            }, 5000);
         } finally {
             setLoading(false);
         }
@@ -61,9 +76,16 @@ const ForgotPassword = () => {
                 setShowPasswordFields(true);
             } else {
                 setErrorMessage('Invalid verification code');
+
+                setTimeout(() => {
+                    setErrorMessage('');
+                }, 5000);
             }
         } catch (error) {
             setErrorMessage('Error verifying code');
+            setTimeout(() => {
+                setErrorMessage('');
+            }, 5000);
         } finally {
             setLoading(false);
         }
@@ -72,18 +94,18 @@ const ForgotPassword = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
+
         if (newPassword !== confirmPassword) {
             alert("Passwords do not match");
             setLoading(false);
             return;
         }
-    
+
         const payload = {
             email: email, 
             newPassword: newPassword,
         };
-    
+
         try {
             const response = await fetch('http://localhost:8080/api/email/change-password-by-email', {
                 method: 'PUT',
@@ -92,7 +114,7 @@ const ForgotPassword = () => {
                 },
                 body: JSON.stringify(payload),
             });
-    
+
             if (response.ok) {
                 alert("Password successfully reset!");
                 handleClear();
@@ -134,6 +156,23 @@ const ForgotPassword = () => {
             <div className="login-container">
                 <form className="login-form" onSubmit={handleSubmit}>
                     <h2>Forgot Password</h2>
+                
+                    {snackbarMessage && (
+                        <div className="input-group">
+                        <div className="snackbar success">
+                            <FaCircleCheck style={{ marginRight: "5px", marginBottom: "-2px" }}/> {snackbarMessage}
+                        </div>
+                        </div>
+                    )}
+
+                    {errorMessage && (
+                        <div className="input-group">
+                        <div className="snackbar error">
+                            <IoCloseCircle style={{ marginRight: "5px", marginBottom: "-2px" }}/> {errorMessage}
+                        </div>
+                        </div>
+                    )}
+
                     <div className="input-group">
                         <span className="icon"><FaUser /></span>
                         <input
@@ -153,7 +192,12 @@ const ForgotPassword = () => {
                                 type="text"
                                 className="input-field"
                                 value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value)}
+                                onChange={(e) => {
+                                    const input = e.target.value;
+                                    if (/^\d{0,6}$/.test(input)) {
+                                        setVerificationCode(input);
+                                    }
+                                }}
                                 placeholder="Enter Verification Code"
                                 required
                             />
@@ -192,8 +236,6 @@ const ForgotPassword = () => {
                             </div>
                         </>
                     )}
-
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
 
                     <button type="submit" className="login-button" disabled={loading}>
                         {loading ? "Processing..." : showPasswordFields ? "RESET PASSWORD" : showVerificationField ? "VERIFY CODE" : "SEND CODE"}

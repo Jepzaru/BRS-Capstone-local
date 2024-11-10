@@ -475,21 +475,21 @@ const fetchHeadIsApprovedRequests = async () => {
                         >
                             <td>{request.transactionId}</td>
                             <td>{request.userName}</td>
-                            <td>{request.department}</td>
+                            <td><span style={{color: "#782324", fontWeight: "700"}}>{request.department}</span></td>
                             <td>{request.typeOfTrip}</td>
                             <td>{request.destinationFrom}</td>
                             <td>{request.destinationTo}</td>
                             <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
-                            <td>{request.vehicleType} - {request.plateNumber}</td>
+                            <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span></td>
                             <td>
                               {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
                                 request.reservedVehicles.map((vehicle, index) => (
                                   <div key={index}>
-                                    {vehicle.vehicleType} - {vehicle.plateNumber} 
+                                    <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
                                   </div>
                                 ))
                               ) : (
-                                <div>No Vehicles Added</div>
+                                <div><span style={{fontWeight: "700"}}>No Vehicles Added</span></div>
                               )}
                             </td>
                             <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>

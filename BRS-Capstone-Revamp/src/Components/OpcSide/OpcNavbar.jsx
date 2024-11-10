@@ -17,8 +17,7 @@ const OpcNavbar = () => {
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
-
-  // Use useEffect to get the saved requestCount from localStorage on initial load
+  
   useEffect(() => {
     const savedCount = localStorage.getItem('requestCount');
     if (savedCount) {
@@ -26,7 +25,6 @@ const OpcNavbar = () => {
     }
   }, []);
 
-  // Use useEffect to save requestCount in localStorage whenever it changes
   useEffect(() => {
     if (requestCount > 0) {
       localStorage.setItem('requestCount', requestCount);

@@ -498,16 +498,14 @@ const Reservation = () => {
                         Pick-Up Time:
                       </label>
                       <PickUpDropdown
-                      name="pickUpTime"
-                      selectedTime={formData.pickUpTime}
-                      onChange={handleInputChange}
-                      disabled={!returnScheduleDate}
-                      date={returnScheduleDate}
-                      plateNumber={selectedVehiclePlateNumber}
-                      addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
-                      token={token}
-
-                    />
+                        name="pickUpTime"
+                        selectedTime={formData.pickUpTime}
+                        onChange={handleInputChange}
+                        plateNumber={selectedVehiclePlateNumber}
+                        addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
+                        token={token}
+                        departureTime={formData.departureTime} 
+                      />
                     </div>
                   )} 
               </div>
