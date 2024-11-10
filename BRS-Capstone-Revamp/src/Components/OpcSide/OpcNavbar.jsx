@@ -12,24 +12,50 @@ import { FaCalendarDay } from "react-icons/fa";
 
 const OpcNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [requestCount, setRequestCount] = useState(0);
+  const token = localStorage.getItem('token');
+  const [requestCount, setRequestCount] = useState(
+    parseInt(localStorage.getItem('requestCount'), 10) || 0 // Load initial value from localStorage
+  );
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
-  
-  useEffect(() => {
-    const savedCount = localStorage.getItem('requestCount');
-    if (savedCount) {
-      setRequestCount(parseInt(savedCount, 10));
+
+  const fetchHeadIsApprovedRequests = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/reservations/head-approved", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const currentDate = new Date();
+
+      if (Array.isArray(data)) {
+        const filteredRequests = data.filter(request => {
+          const scheduleDate = new Date(request.schedule);
+          const returnScheduleDate = new Date(request.returnSchedule);
+          return (
+            (!request.opcIsApproved && !request.rejected) &&
+            (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
+          );
+        });
+
+        const count = filteredRequests.length;
+        setRequestCount(count);
+        localStorage.setItem('requestCount', count); // Store in localStorage for persistence
+      } else {
+        setRequestCount(0);
+        localStorage.setItem('requestCount', 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch requests.", error);
+      setRequestCount(0);
+      localStorage.setItem('requestCount', 0);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    if (requestCount > 0) {
-      localStorage.setItem('requestCount', requestCount);
-    }
-  }, [requestCount]);
+    fetchHeadIsApprovedRequests();
+  }, []); // Only fetch once when the component mounts
 
   return (
     <>
@@ -78,5 +104,4 @@ const OpcNavbar = () => {
     </>
   );
 };
-
 export default OpcNavbar;

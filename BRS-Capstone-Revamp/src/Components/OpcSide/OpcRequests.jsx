@@ -188,16 +188,13 @@ const fetchHeadIsApprovedRequests = async () => {
       alert('Please provide reason of rejection.');
       return;
     }
-
+  
     const reservationData = {
       rejected: true,
       status: 'Rejected',
       feedback: feedback
     };
-
-    const formData = new FormData();
-    formData.append("reservation", JSON.stringify(reservationData));
-
+  
     try {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
@@ -205,12 +202,13 @@ const fetchHeadIsApprovedRequests = async () => {
           "Content-Type": "application/json", 
           "Authorization": `Bearer ${token}`,
         }, 
-      body: JSON.stringify(reservationData),
+        body: JSON.stringify(reservationData),
       });
-
+  
       if (response.ok) {
-        fetchHeadIsApprovedRequests();
+        await fetchHeadIsApprovedRequests();
         handleCloseModal();
+        window.location.reload();
       } else {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
@@ -229,10 +227,10 @@ const fetchHeadIsApprovedRequests = async () => {
   
     const reservationData = {
       opcIsApproved: true,
-      driverId: selectedDriver.id, 
+      driverId: selectedDriver.id,
       driverName: selectedDriver.driverName,
       status: 'Approved',
-      reservedVehicles: selectedRequest.reservedVehicles 
+      reservedVehicles: selectedRequest.reservedVehicles,
     };
   
     try {
@@ -242,12 +240,13 @@ const fetchHeadIsApprovedRequests = async () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(reservationData), 
+        body: JSON.stringify(reservationData),
       });
   
       if (response.ok) {
-        fetchHeadIsApprovedRequests();
-        handleCloseModal();
+        await fetchHeadIsApprovedRequests(); // Wait for this to complete if it updates local state or storage
+        handleCloseModal(); // Close the modal
+        window.location.reload(); // Reload the page to reflect the updates
       } else {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
