@@ -1,12 +1,13 @@
 package com.brscapstone1.brscapstone1.Repository;
 
-import com.brscapstone1.brscapstone1.Entity.VehicleEntity; 
 import java.util.List;
-import com.brscapstone1.brscapstone1.Entity.VehicleMaintenanceDetailsEntity;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
+import com.brscapstone1.brscapstone1.Entity.VehicleMaintenanceDetailsEntity;
 
 @Repository
 public interface VehicleMaintenanceDetailsRepository extends JpaRepository<VehicleMaintenanceDetailsEntity, Integer> {
