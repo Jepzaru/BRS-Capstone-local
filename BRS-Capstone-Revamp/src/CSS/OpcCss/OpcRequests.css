@@ -113,7 +113,7 @@ body {
 }
 
 .opc-requests-table tr:hover{
-  background-color: gold;
+  background-color: #ffe44a;
   cursor: pointer;
 }
 

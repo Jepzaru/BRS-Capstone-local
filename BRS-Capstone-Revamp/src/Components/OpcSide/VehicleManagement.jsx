@@ -34,6 +34,8 @@ const VehicleManagement = () => {
   const [updateMaintenanceStartDate, setUpdateMaintenanceStartDate] = useState('');
   const [updateMaintenanceEndDate, setUpdateMaintenanceEndDate] = useState('');
   const [filterType, setFilterType] = useState("all");
+  const [vehicleSchedList, setVehicleSchedList] = useState([]);
+  const [maintenanceFilterType, setMaintenanceFilterType] = useState('all');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [vehicleToComplete, setVehicleToComplete] = useState(null);
   const [updateMaintenanceDetails, setUpdateMaintenanceDetails] = useState('');
@@ -269,6 +271,14 @@ const VehicleManagement = () => {
     );
   }, [vehicles, searchTerm, sortOption, filterType]);
 
+  useEffect(() => {
+  // Assuming you have a function to filter vehicle schedules
+  const filteredSchedList = vehicles.filter(vehicle => 
+    filterType === 'all' || vehicle.vehicleType === filterType
+  );
+  setVehicleSchedList(filteredSchedList);
+}, [filterType, vehicles]);
+
   return (
     <div className="vehiclemanage">
       <Header />
@@ -318,7 +328,7 @@ const VehicleManagement = () => {
                         <td>{vehicle.vehicleType}</td>
                         <td>{vehicle.plateNumber}</td>
                         <td>{vehicle.capacity}</td>
-                        <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'orange' }}>
+                        <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Unavailable' ? 'red' : 'orange' }}>
                         {vehicle.status}
                         </td>
                         <td className='td-action'>
@@ -341,16 +351,16 @@ const VehicleManagement = () => {
       <div className="vehicle-schedlist2">
         <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
         <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
-        <select
-                  className="reservation-filter"
-                  onChange={(e) => setFilterType(e.target.value)}
-                  value={filterType}
-                >
-                  <option value="all">All Vehicles</option>
-                  {[...new Set(vehicles.map(vehicle => vehicle.vehicleType))].map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
+                <select
+          className="reservation-filter"
+          onChange={(e) => setMaintenanceFilterType(e.target.value)}
+          value={maintenanceFilterType}
+        >
+          <option value="all">All Vehicles</option>
+          {[...new Set(vehicles.map(vehicle => vehicle.vehicleType))].map((type) => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
       <div className='vehicle-table-container'>
       <table className="vehicle-table">
@@ -362,9 +372,9 @@ const VehicleManagement = () => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
+                <tbody>
           {maintenanceDetails
-            .filter(detail => filterType === 'all' || detail.vehicleType === filterType)
+            .filter(detail => maintenanceFilterType === 'all' || detail.vehicleType === maintenanceFilterType)
             .map(detail => {
               const startDate = detail.maintenanceStartDate
                 ? new Date(detail.maintenanceStartDate).toLocaleDateString("en-US", {
@@ -405,15 +415,10 @@ const VehicleManagement = () => {
                 </tr>
               );
             })}
-          {maintenanceDetails.filter(detail => filterType === 'all' || detail.vehicleType === filterType).length === 0 && (
-            <tr>
-              <td colSpan="4">No vehicles currently under maintenance</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      </div>
-    </div>
+          </tbody>
+          </table>
+          </div>
+        </div>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
@@ -517,6 +522,7 @@ const VehicleManagement = () => {
           >
             <option value="Available">Available</option>
             <option value="Maintenance">Maintenance</option>
+            <option value="Unavailable">Unavailable</option>
           </select>
 
           {updateStatus === 'Maintenance' && (
