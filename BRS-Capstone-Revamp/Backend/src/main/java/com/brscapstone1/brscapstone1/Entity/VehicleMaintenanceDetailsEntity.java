@@ -14,7 +14,7 @@ public class VehicleMaintenanceDetailsEntity {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = Constants.DataAnnotations.VEHICLE_ID, nullable = false) 
+    @JoinColumn(name = Constants.DataAnnotations.VEHICLE_ID, nullable = false)
     private VehicleEntity vehicle;
 
     private String vehicleType;

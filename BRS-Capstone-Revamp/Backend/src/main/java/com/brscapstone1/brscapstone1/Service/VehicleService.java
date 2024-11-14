@@ -76,42 +76,46 @@ public class VehicleService {
     } catch (Exception e) {
         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, Constants.ExceptionMessage.VEHICLE_ERROR_UPDATE, e);
     }
-}
-
-
-public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
-  return maintenanceDetailsRepository.findAll();
-}
-
-public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(int id, Boolean isCompleted) {
-  VehicleMaintenanceDetailsEntity maintenanceDetails = maintenanceDetailsRepository.findById(id)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(Constants.ExceptionMessage.MAINTENANCE_NOT_FOUND, id)));
-
-  maintenanceDetails.setIsCompleted(isCompleted);
-  if (isCompleted) {
-      maintenanceDetails.setStatus(Constants.Annotation.COMPLETED);
-
-      VehicleEntity vehicle = maintenanceDetails.getVehicle();
-      if (vehicle != null) {
-          vehicle.setStatus(Constants.Annotation.AVAILABLE);
-          vehicleRepository.save(vehicle); 
-      }
-  } else {
-      maintenanceDetails.setStatus(Constants.Annotation.PENDING);
   }
 
-  return maintenanceDetailsRepository.save(maintenanceDetails);
-}
+  public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
+    return maintenanceDetailsRepository.findAll();
+  }
+
+  public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(int id, Boolean isCompleted) {
+    VehicleMaintenanceDetailsEntity maintenanceDetails = maintenanceDetailsRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(Constants.ExceptionMessage.MAINTENANCE_NOT_FOUND, id)));
+
+    maintenanceDetails.setIsCompleted(isCompleted);
+    if (isCompleted) {
+        maintenanceDetails.setStatus(Constants.Annotation.COMPLETED);
+
+        VehicleEntity vehicle = maintenanceDetails.getVehicle();
+        if (vehicle != null) {
+            vehicle.setStatus(Constants.Annotation.AVAILABLE);
+            vehicleRepository.save(vehicle); 
+        }
+    } else {
+        maintenanceDetails.setStatus(Constants.Annotation.PENDING);
+    }
+    return maintenanceDetailsRepository.save(maintenanceDetails);
+  }
 
   public String delete(int id){
     String msg = "";
 
     if(vehicleRepository.findById(id).isPresent()){
-      vehicleRepository.deleteById(id);
-      msg = MessageFormat.format(Constants.ResponseMessages.VEHICLE_DELETE_SUCCESS, id);
-    }else{
-      msg = Constants.ExceptionMessage.VEHICLE_ID_NOT_FOUND;
+        VehicleEntity vehicle = vehicleRepository.findById(id).get();
+        List<VehicleMaintenanceDetailsEntity> maintenanceDetails = maintenanceDetailsRepository.findByVehicle(vehicle);
+
+        for (VehicleMaintenanceDetailsEntity maintenanceDetail : maintenanceDetails) {
+            maintenanceDetailsRepository.delete(maintenanceDetail);
+        }
+        vehicleRepository.deleteById(id);
+        msg = MessageFormat.format(Constants.ResponseMessages.VEHICLE_DELETE_SUCCESS, id);
+    } else {
+        msg = Constants.ExceptionMessage.VEHICLE_ID_NOT_FOUND;
     }
     return msg;
-  }  
+  }
 }
