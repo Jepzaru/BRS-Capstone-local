@@ -170,7 +170,6 @@ const ManageRequest = () => {
                                         <th>Return Schedule</th>
                                         <th>Departure Time</th>
                                         <th>Pick Up Time</th>
-                                        <th>Department</th>
                                         <th className="reason-column">Purpose</th>
                                         <th>Status</th>
                                         <th>Reason of Rejection</th>
@@ -179,7 +178,7 @@ const ManageRequest = () => {
                                 <tbody>
                                     {filteredRequests.length === 0 ? (
                                         <tr>
-                                            <td colSpan="14" className="no-requests">No Requests Made</td>
+                                            <td colSpan="15" className="no-requests">No Requests Made</td>
                                         </tr>
                                     ) : (
                                         filteredRequests.map(request => (
@@ -209,7 +208,6 @@ const ManageRequest = () => {
                                                 <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                                                 <td>{request.departureTime}</td>
                                                 <td>{request.pickUpTime ? request.pickUpTime : 'N/A'}</td>
-                                                <td>{request.department}</td>
                                                 <td className="reason-column">{request.reason}</td>
                                                 <td>{getApprovalStatus(request)}</td>
                                                 <td>{request.feedback ? request.feedback : 'N/A'}</td>

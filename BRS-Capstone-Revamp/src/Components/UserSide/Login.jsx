@@ -14,12 +14,10 @@ const Login = () => {
   const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
-  // Memoized headers for fetch call
   const headers = useMemo(() => ({
     'Content-Type': 'application/json'
   }), []);
 
-  // Use callback for event handlers
   const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     setIsLoading(true);

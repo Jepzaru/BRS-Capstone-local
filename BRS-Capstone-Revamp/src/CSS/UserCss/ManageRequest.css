@@ -106,7 +106,7 @@ body {
   border-collapse: collapse;
   background-color: white;
   table-layout: fixed;
-  height: 700px;
+  height: auto;
 }
 
 .mrg-t-v-row{

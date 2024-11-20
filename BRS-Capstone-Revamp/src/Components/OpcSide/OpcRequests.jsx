@@ -244,9 +244,9 @@ const fetchHeadIsApprovedRequests = async () => {
       });
   
       if (response.ok) {
-        await fetchHeadIsApprovedRequests(); // Wait for this to complete if it updates local state or storage
-        handleCloseModal(); // Close the modal
-        window.location.reload(); // Reload the page to reflect the updates
+        await fetchHeadIsApprovedRequests(); 
+        handleCloseModal(); 
+        window.location.reload(); 
       } else {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
