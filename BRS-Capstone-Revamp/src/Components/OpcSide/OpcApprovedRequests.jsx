@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -16,13 +16,15 @@ const OpcApprovedRequests = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [confirmMode, setConfirmMode] = useState(false);
   const [loading, setLoading] = useState(true); 
-  
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+  
   useEffect(() => {
     const fetchApprovedRequests = async () => {
       setLoading(true); 
-  
       const token = localStorage.getItem('token');
+      
       if (!token) {
         console.error("No token found");
         setLoading(false);
@@ -53,8 +55,6 @@ const OpcApprovedRequests = () => {
     fetchApprovedRequests(); 
   }, []); 
    
-  
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -84,7 +84,6 @@ const OpcApprovedRequests = () => {
     }
   };
   
-
   const sortedRequests = sortRequests(requests);
 
   const handleRowSelection = (transactionId) => {
@@ -147,12 +146,24 @@ const OpcApprovedRequests = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
 
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
-};
-
+  };
 
   const handleCancel = () => {
     setSelectedRows(new Set());
     setConfirmMode(false);
+  };
+
+  const totalPages = Math.ceil(sortedRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    sortedRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [sortedRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -299,6 +310,15 @@ const OpcApprovedRequests = () => {
                   </tbody>
                 </table>
               )}
+               <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FaFlag, FaSortAlphaDown, FaSwatchbook, FaBus } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle, IoSearch } from "react-icons/io5";
@@ -21,7 +21,8 @@ const OpcRequests = () => {
   const [loading, setLoading] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
 
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
   
 const token = localStorage.getItem('token');
 
@@ -181,8 +182,6 @@ const fetchHeadIsApprovedRequests = async () => {
     });
   };
   
-
-
   const handleReject = async () => {
     if (!feedback.trim()) {
       alert('Please provide reason of rejection.');
@@ -317,6 +316,21 @@ const fetchHeadIsApprovedRequests = async () => {
 
   const allVehiclesHaveDrivers = () => {
     return selectedRequest?.reservedVehicles.every(vehicle => vehicle.driverId);
+  };
+  
+  const filteredRequests = useMemo(() => getFilteredAndSortedRequests(), [requests, searchTerm, sortBy]);
+
+  const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    filteredRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [filteredRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -565,6 +579,15 @@ const fetchHeadIsApprovedRequests = async () => {
                   </tbody>
               </table>
                )}
+                <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
