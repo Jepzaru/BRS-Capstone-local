@@ -391,7 +391,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 <div className="close-overlay">
                     <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
                         <h4>{responseModal.message}</h4>
-                        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
                     </div>
                 </div>
             )}

@@ -394,7 +394,6 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                 <div className="close-overlay">
                     <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
                         <h4>{responseModal.message}</h4>
-                        <button onClick={handleCloseResponseModal} className="close-mdl"></button>
                     </div>
                 </div>
             )}
