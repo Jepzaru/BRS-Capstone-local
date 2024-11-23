@@ -18,7 +18,7 @@ const OpcApprovedRequests = () => {
   const [loading, setLoading] = useState(true); 
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const recordsPerPage = 15;
   
   useEffect(() => {
     const fetchApprovedRequests = async () => {
