@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
-import VehicleManagementCalendar from './VehicleManagementCalendar';
+import DriverManagementCalendar from './DriverManagementCalendar';
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
@@ -693,7 +693,7 @@ const DriverManagement = () => {
 {showCalendar && (
   <div className="calendar-modal">
     <div className="user-calendar-modal-content">
-      <VehicleManagementCalendar
+      <DriverManagementCalendar
         onDateSelect={handleDateSelect} 
         minDate={updateLeaveStartDate} 
       />
