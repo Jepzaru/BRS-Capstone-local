@@ -17,12 +17,10 @@ const OpcApprovedRequests = () => {
   const [confirmMode, setConfirmMode] = useState(false);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
-
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
-
   const [showModal, setShowModal] = useState(false);
-const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   
   useEffect(() => {
     const fetchApprovedRequests = async () => {
