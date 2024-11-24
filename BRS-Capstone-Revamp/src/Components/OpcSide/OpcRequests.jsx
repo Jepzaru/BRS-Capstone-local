@@ -624,6 +624,17 @@ const fetchHeadIsApprovedRequests = async () => {
 
               setSelectedDriver(driver);
             }}
+            style={{
+              width: '150px',
+              padding: '2px 5px',
+              border: '2px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: '#f9f9f9',
+              fontSize: '14px',
+              marginLeft: '5px',
+              color: '#333',
+              transition: 'border-color 0.3s ease, background-color 0.3s ease'
+            }}
           >
             <option value="" disabled selected>Select Driver</option>
             {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
@@ -653,6 +664,15 @@ const fetchHeadIsApprovedRequests = async () => {
                             const driverId = e.target.value;
                             const driver = drivers.find(driver => String(driver.id) === String(driverId));
                             handleDriverSelect(vehicle.id, driver); 
+                          }}
+                          style={{
+                            width: '150px',
+                            padding: '2px 5px',
+                            border: '2px solid #ccc',
+                            borderRadius: '4px',
+                            backgroundColor: '#f9f9f9',
+                            fontSize: '14px',
+                            marginLeft: '5px',
                           }}
                         >
                           <option value="">Select Driver</option>

@@ -62,34 +62,33 @@ const [selectedRequest, setSelectedRequest] = useState(null);
     fetchApprovedRequests(); 
   }, []); 
    
+  
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-  };
+};
 
-  const handleSortChange = (event) => {
-    setSortOption(event.target.value);
-  };
+const handleSortChange = (event) => {
+  setSortOption(event.target.value);
+};
 
-  const sortRequests = (requests) => {
-    const filteredRequests = requests.filter(request => request.reason.toLowerCase().includes(searchTerm.toLowerCase()));
-  
-    filteredRequests.sort((a, b) => {
-      const dateA = new Date(a.schedule);
-      const dateB = new Date(b.schedule);
-      return dateB - dateA; 
-    });
-  
-    switch (sortOption) {
-      case "alphabetical":
-        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
-      case "ascending":
-        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
-      default:
-        return filteredRequests; 
-    }
-  };
+const sortRequests = (requests) => {
+  const filteredRequests = requests.filter(request =>
+    Object.values(request).some(value =>
+      value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  switch (sortOption) {
+    case "alphabetical":
+      return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
+    case "ascending":
+      return filteredRequests.sort((a, b) => a.capacity - b.capacity);
+    case "descending":
+      return filteredRequests.sort((a, b) => b.capacity - a.capacity);
+    default:
+      return filteredRequests;
+  }
+};
   
   const sortedRequests = useMemo(() => sortRequests(requests), [requests, searchTerm, sortOption]);
 
@@ -193,7 +192,7 @@ const [selectedRequest, setSelectedRequest] = useState(null);
             <div className="search-container">
               <input
                 type="text"
-                placeholder="Search Reason"
+                placeholder="Search"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="search-bar"
@@ -247,6 +246,7 @@ const [selectedRequest, setSelectedRequest] = useState(null);
                       <th>From</th>
                       <th>To</th>
                       <th>Capacity</th>
+                      <th>Schedule</th>
                       <th>Vehicle</th>
                       <th>Added Vehicle</th>
                       <th>Action</th>
@@ -255,7 +255,7 @@ const [selectedRequest, setSelectedRequest] = useState(null);
                   <tbody>
                     {requests.length === 0 ? (
                       <tr>
-                        <td colSpan={confirmMode ? "11" : "13"} className="no-requests">No Requests Available</td>
+                        <td colSpan={confirmMode ? "10" : "13"} className="no-requests">No Requests Available</td>
                       </tr>
                     ) : (
                       sortedRequests.map((request, index) => (
@@ -284,6 +284,7 @@ const [selectedRequest, setSelectedRequest] = useState(null);
                           <td>{request.destinationFrom}</td>
                           <td>{request.destinationTo}</td>
                           <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
+                          <td>{formatDate(request.schedule)}</td>
                           <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span></td>
                           <td>
                             {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
@@ -349,7 +350,7 @@ const [selectedRequest, setSelectedRequest] = useState(null);
                               <div>No Vehicle Added</div>
                             )}
           </p>
-          <p><strong>Added Vehicles: </strong>
+          <p><strong>Added Drivers: </strong>
           {selectedRequest.reservedVehicles && selectedRequest.reservedVehicles.length > 0 ? (
                               selectedRequest.reservedVehicles.map((vehicle, index) => (
                                 <div key={index}>- {vehicle.driverName || 'N/A'}</div>
