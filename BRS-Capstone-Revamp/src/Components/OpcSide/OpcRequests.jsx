@@ -20,58 +20,73 @@ const OpcRequests = () => {
   const [sortBy, setSortBy] = useState('');
   const [loading, setLoading] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
-
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
-  
-const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  const [approvedRequests, setApprovedRequests] = useState([]);
 
-const fetchHeadIsApprovedRequests = async () => {
-  setLoading(true);
-  try {
-    const response = await fetch("http://localhost:8080/reservations/head-approved", {
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    const data = await response.json();
-    const currentDate = new Date();
-
-    if (Array.isArray(data)) {
-      const filteredRequests = data.filter(request => {
-        const scheduleDate = new Date(request.schedule);
-        const returnScheduleDate = new Date(request.returnSchedule);
-
-        return (
-          (!request.opcIsApproved && !request.rejected) &&
-          (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
-        );
+  const fetchApprovedRequest = async () =>{
+    try {
+      const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+        headers: { "Authorization": `Bearer ${token}` }  
       });
 
-      const count = filteredRequests.length;
-      setRequests(filteredRequests);
-      setRequestCount(count); 
+      const data = await response.json();
+      setApprovedRequests(data || []);
+      console.log(data);
+    } catch (error) {
+      console.error("Failed to fetch approved requests.", error);
+    }
+  };
 
-      localStorage.setItem('requestCount', count);
-      
-      console.log(count);  
-    } else {
-      console.error("Unexpected data format:", data);
+  useEffect(() => {
+    fetchApprovedRequest();
+  }, [])
+
+  const fetchHeadIsApprovedRequests = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:8080/reservations/head-approved", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const currentDate = new Date();
+
+      if (Array.isArray(data)) {
+        const filteredRequests = data.filter(request => {
+          const scheduleDate = new Date(request.schedule);
+          const returnScheduleDate = new Date(request.returnSchedule);
+
+          return (
+            (!request.opcIsApproved && !request.rejected) &&
+            (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
+          );
+        });
+
+        const count = filteredRequests.length;
+        setRequests(filteredRequests);
+        setRequestCount(count); 
+
+        localStorage.setItem('requestCount', count);
+        
+        console.log(count);  
+      } else {
+        console.error("Unexpected data format:", data);
+        setRequests([]);
+        setRequestCount(0);  
+
+        localStorage.setItem('requestCount', 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch requests.", error);
       setRequests([]);
       setRequestCount(0);  
 
       localStorage.setItem('requestCount', 0);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Failed to fetch requests.", error);
-    setRequests([]);
-    setRequestCount(0);  
-
-    localStorage.setItem('requestCount', 0);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
@@ -86,10 +101,22 @@ const fetchHeadIsApprovedRequests = async () => {
   const fetchDrivers = async () => {
     try {
       const response = await fetch("http://localhost:8080/opc/driver/getAll", {
-        headers: { "Authorization": `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await response.json();
-      const filteredDrivers = data.filter(driver => driver.status !== 'Unavailable');
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const drivers = await response.json();
+  
+      const filteredDrivers = drivers.filter(driver => {
+        return !approvedRequests.some(request =>
+          request.driverId === driver.id &&
+          request.schedule === selectedRequest.schedule &&
+          request.departureTime === selectedRequest.departureTime
+        );
+      });
   
       setDrivers(filteredDrivers);
     } catch (error) {
@@ -135,7 +162,6 @@ const fetchHeadIsApprovedRequests = async () => {
     return filteredRequests;
   };
   
-
   const handleOpenModal = (request, action) => {
     setSelectedRequest({
       ...request,
