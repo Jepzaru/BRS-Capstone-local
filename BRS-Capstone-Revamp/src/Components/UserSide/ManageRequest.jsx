@@ -22,7 +22,7 @@ const ManageRequest = () => {
   const [loading, setLoading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const recordsPerPage = 7;
 
   const fetchUsersRequests = async () => {
     setLoading(true); 
@@ -209,14 +209,14 @@ const ManageRequest = () => {
                                       <td>{request.destinationTo || 'N/A'}</td>
                                       <td>{request.capacity || 'N/A'}</td>
                                       <td>
-                                        <span style={{ color: "#782324", fontWeight: "700" }}>{request.vehicleType || 'N/A'} :</span>
+                                        <span style={{ color: "#782324", fontWeight: "700" }}>{request.vehicleType || 'N/A'} : </span>
                                         <span style={{ color: "green", fontWeight: "700" }}>{request.plateNumber || 'N/A'}</span>
                                       </td>
                                       <td>
                                         {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
                                           request.reservedVehicles.map((vehicle) => (
                                             <div key={vehicle.id || vehicle.plateNumber}>
-                                              <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType || 'N/A'} :</span>
+                                              <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType || 'N/A'} : </span>
                                               <span style={{ color: "green", fontWeight: "700" }}>{vehicle.plateNumber || 'N/A'}</span>
                                             </div>
                                           ))
