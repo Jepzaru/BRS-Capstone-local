@@ -286,7 +286,7 @@ const Reservation = () => {
             returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : "0001-01-01",
             vehicleType: vehicle.vehicleType || "N/A",
             plateNumber: vehicle.plateNumber || "N/A",
-            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "0001-01-01",
+            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
             departureTime: formatTime(formData.departureTime),
             reason: formData.reservationReason || "N/A",
             status: "Pending",

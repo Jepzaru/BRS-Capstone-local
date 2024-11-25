@@ -32,7 +32,7 @@ public class ReservationEntity {
     private LocalDate returnSchedule = LocalDate.of(0001, 1, 1);  
     private String vehicleType;
     private String plateNumber;
-    private String pickUpTime = "N/A";
+    private String pickUpTime;
     private String departureTime;
     private String reason;
     private String fileUrl;
