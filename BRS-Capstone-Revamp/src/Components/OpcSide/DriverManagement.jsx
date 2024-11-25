@@ -46,9 +46,6 @@ const DriverManagement = () => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [reservationIdToComplete, setReservationIdToComplete] = useState(null);
-  
-
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -66,7 +63,6 @@ const DriverManagement = () => {
     fetchDriverDetails();
   }, [token]);
 
-  
   useEffect(() => {
     const fetchReservations = async () => {
         try {
@@ -85,13 +81,10 @@ const DriverManagement = () => {
             console.error("Error fetching reservations:", error);
         }
     };
-
     fetchReservations();
-}, [selectedDriver, token]); 
-
+  }, [selectedDriver, token]); 
 
   const driverNames = Array.from(new Set(reservations.map(reservation => reservation.driverName))).filter(Boolean);
-
  
   const filteredList = selectedDriverName === "all"
     ? reservations
