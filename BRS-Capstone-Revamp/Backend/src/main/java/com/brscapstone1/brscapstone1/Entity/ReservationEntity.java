@@ -33,7 +33,7 @@ public class ReservationEntity {
     private String vehicleType;
     private String plateNumber;
     private String pickUpTime = "N/A";
-    private String departureTime = "N/A";
+    private String departureTime;
     private String reason;
     private String fileUrl;
     private String status;
