@@ -485,8 +485,8 @@ const DriverManagement = () => {
                         </td>
                         <td>{reservation.schedule ? formatDate(reservation.schedule) : 'N/A'}</td>
                         <td>{reservation.departureTime || 'N/A'}</td>
-                        <td>{reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
-                        <td>{reservation.pickUpTime || 'N/A'}</td>
+                        <td>{reservation.returnSchedule === '0001-01-01' ? 'N/A' : reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
+                        <td>{reservation.pickUpTime === '0001-01-01' ? 'N/A' : reservation.pickUpTime || 'N/A'}</td>
                         <td>
                           {reservation.isCompleted === true ? (
                             <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>

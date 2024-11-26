@@ -31,14 +31,17 @@ const ManageRequest = () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
-      setRequests(data);
+      
+      const sortedData = data.sort((a, b) => b.id - a.id);
+      setRequests(sortedData);
     } catch (error) {
       console.error("Failed to fetch user's requests.", error);
     } finally {
       setLoading(false); 
     }
   };
-
+  
+  
   useEffect(() => {
     fetchUsersRequests();
   }, [token, username]);
@@ -71,10 +74,13 @@ const ManageRequest = () => {
 
   const filteredRequests = useMemo(() => 
     sortedRequests.filter(request =>
-      (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
+      Object.values(request).some(value =>
+        (value || '').toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     ),
     [sortedRequests, searchTerm]
   );
+  
 
   const getApprovalStatus = (request) => {
     if (request.status === 'Completed') {
@@ -149,7 +155,7 @@ const ManageRequest = () => {
                     <div className="search-container">
                         <input
                             type="text"
-                            placeholder="Search Reason"
+                            placeholder="Search"
                             value={searchTerm}
                             onChange={handleSearchChange}
                             className="search-bar"
@@ -227,7 +233,7 @@ const ManageRequest = () => {
                                       <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
                                       <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                                       <td>{request.departureTime || 'N/A'}</td>
-                                      <td>{request.pickUpTime || 'N/A'}</td>
+                                      <td>{request.pickUpTime === '0001-01-01' ? 'N/A' : request.pickUpTime || 'N/A'}</td>
                                       <td className="reason-column">{request.reason || 'N/A'}</td>
                                       <td>{getApprovalStatus(request)}</td>
                                       <td>{request.feedback || 'N/A'}</td>

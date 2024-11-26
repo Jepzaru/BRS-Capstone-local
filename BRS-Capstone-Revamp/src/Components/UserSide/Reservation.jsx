@@ -502,17 +502,19 @@ const Reservation = () => {
                       max={calculateMaxCapacity()}
                       onChange={handleInputChange}
                     />
-                    
-                    {capacityError && (
+                     {capacityError && (
                       <div className="capacity-error-cloud">
                         <span>{capacityError}</span>
                         <div className="cloud-arrow"></div> 
                       </div>
                     )}
+                    
                   </div>
+                  
               </div>
               <div className="form-group-inline">
               <div className="form-group">
+                
                     <label htmlFor="department"><FaBuildingUser style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Department:</label>
                     <input type="text" id="department" name="department" value={userDepartment} disabled />
                   </div>

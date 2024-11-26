@@ -126,7 +126,6 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
         try {
             let fileUrl = null;
     
-            // Check if there is a file to upload
             if (formData.approvalProof instanceof File) {
                 const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
                 const snapshot = await uploadBytes(fileRef, formData.approvalProof);
@@ -314,7 +313,7 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                                 name="pickUpTime"
                                 value={formData.pickUpTime}
                                 onChange={handleInputChange}
-                                disabled={formData.typeOfTrip === 'oneWay'}
+                                disabled={formData.typeOfTrip === 'oneWay' || !formData.returnSchedule || formData.returnSchedule === 'N/A'}
                                 date={returnScheduleDate}
                                 plateNumber={formData.plateNumber}
                                 addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}

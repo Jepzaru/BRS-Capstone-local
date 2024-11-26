@@ -71,7 +71,9 @@ const VipManageRequest = () => {
 
   const filteredRequests = useMemo(() => 
     sortedRequests.filter(request =>
-      (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
+      Object.values(request).some(value =>
+        (value || '').toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     ),
     [sortedRequests, searchTerm]
   );
@@ -149,7 +151,7 @@ const VipManageRequest = () => {
                     <div className="search-container">
                         <input
                             type="text"
-                            placeholder="Search Reason"
+                            placeholder="Search"
                             value={searchTerm}
                             onChange={handleSearchChange}
                             className="search-bar"
