@@ -236,8 +236,15 @@ body {
   .add-another-vehicle:hover{
     background-color: #431314;
   }
+
+  .purpose-word-break {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    word-break: break-word; 
+  }
   
-  
+
   .trip-type input[type="radio"] + span:before {
     content: '';
     position: absolute;
