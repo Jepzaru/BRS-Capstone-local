@@ -182,21 +182,30 @@ const DriverManagement = () => {
           driverName: updateDriverName,
           contactNumber: updatePhoneNumber,
           status: updateDriverStatus,
-          leaveStartDate: updateLeaveStartDate,
-          leaveEndDate: updateLeaveEndDate
+          leaveStartDate: updateLeaveStartDate || null,
+          leaveEndDate: updateLeaveEndDate || null
         })
       });
+  
       if (response.ok) {
         const updatedDriver = await response.json();
-        setDrivers(drivers.map(driver => driver.id === selectedDriverId ? updatedDriver : driver));
+  
+        setDrivers(prevDrivers =>
+          prevDrivers.map(driver =>
+            driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
+          )
+        );
+  
         closeUpdateModal();
       } else {
-        throw new Error('Failed to update driver');
+        const errorText = await response.text();
+        throw new Error(`Failed to update driver: ${response.status} ${errorText}`);
       }
     } catch (error) {
       console.error("Failed to update driver", error);
     }
   };
+  
 
   const handleDeleteDriver = async () => {
     try {
