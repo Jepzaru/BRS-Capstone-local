@@ -1,5 +1,8 @@
 package com.brscapstone1.brscapstone1;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Constants {
     public static class ApiRoutes{
         // PLAIN ROUTES
@@ -228,5 +231,10 @@ public class Constants {
         public static final String EMAIL_SUCCESS = "Email send successfully to {}";
         public static final String EMAIL_FAILED = "Failed to send email: ";
         public static final String EMAIL_FAILED_LOGGER = "Error while sending email: {}";
+    }
+
+    public static class MagicNumbers{
+        public static final LocalDate DEFAULT_DATE = LocalDate.of(1, 1, 1);
+        public static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of(1, 1, 1, 0, 0);
     }
 }
