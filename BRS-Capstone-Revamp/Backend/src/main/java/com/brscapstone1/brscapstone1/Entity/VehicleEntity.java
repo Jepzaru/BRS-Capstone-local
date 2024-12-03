@@ -19,7 +19,7 @@ public class VehicleEntity {
   private String vehicleType = "Unknown";
   private String plateNumber = "N/A";
   private int capacity = 1;
-  private String status = "N/A";
+  private String status = "Available";
   private LocalDate maintenanceStartDate = LocalDate.of(0001, 1, 1);
   private LocalDate maintenanceEndDate = LocalDate.of(0001, 1, 1);
   private String maintenanceDetails = "N/A";
