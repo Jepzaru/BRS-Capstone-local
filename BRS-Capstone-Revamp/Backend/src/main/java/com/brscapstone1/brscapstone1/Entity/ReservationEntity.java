@@ -49,6 +49,7 @@ public class ReservationEntity {
     private String driverName = "N/A";
     private String rejectedBy = "N/A";
     private LocalDateTime reservationTimestamp;
+    private Boolean isCanceled;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime headTimestamp = Constants.MagicNumbers.DEFAULT_TIMESTAMP;
@@ -62,7 +63,6 @@ public class ReservationEntity {
     @OneToMany(mappedBy = Constants.DataAnnotations.RESERVATION, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReservationVehicleEntity> reservedVehicles;
 
-    
     public int getId() {
         return id;
     }
@@ -303,6 +303,14 @@ public class ReservationEntity {
     public void setOpcTimestamp(LocalDateTime opcTimestamp) {
         this.opcTimestamp = opcTimestamp;
     }
+    
+    public Boolean getIsCanceled() {
+        return isCanceled;
+    }
+
+    public void setIsCanceled(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
 
     public ReservationEntity() {
         super();
@@ -313,7 +321,7 @@ public class ReservationEntity {
             String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
             Boolean opcIsApproved, Boolean isRejected, Boolean isCompleted, Boolean headIsApproved, String userName, String feedback,
             int driverId, String driverName, String rejectedBy, LocalDateTime reservationTimestamp, LocalDateTime headTimestamp,
-            LocalDateTime opcTimestamp) {
+            LocalDateTime opcTimestamp, Boolean isCanceled) {
         this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;
@@ -341,5 +349,6 @@ public class ReservationEntity {
         this.reservationTimestamp = reservationTimestamp;
         this.headTimestamp = headTimestamp;
         this.opcTimestamp = opcTimestamp;
+        this.isCanceled = isCanceled;
     }
 }

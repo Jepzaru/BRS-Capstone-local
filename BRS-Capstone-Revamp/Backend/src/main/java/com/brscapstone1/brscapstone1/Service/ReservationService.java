@@ -180,14 +180,25 @@ public class ReservationService {
                 } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
                     existingReservation.setRejectedBy(Constants.Annotation.HEAD);
                 }
+            } else {
+                if (updatedReservation.isOpcIsApproved() != null && updatedReservation.isOpcIsApproved()) {
+                    existingReservation.setOpcIsApproved(true);
+                    existingReservation.setOpcTimestamp(LocalDateTime.now());
+                }
+    
+                if (updatedReservation.isHeadIsApproved() != null && updatedReservation.isHeadIsApproved()) {
+                    existingReservation.setHeadIsApproved(true);
+                    existingReservation.setHeadTimestamp(LocalDateTime.now());
+                }
             }
+    
             updateFields(existingReservation, updatedReservation);
-            
+    
             if (updatedReservation.getDriverId() > 0) {
                 existingReservation.setDriverId(updatedReservation.getDriverId());
                 existingReservation.setDriverName(updatedReservation.getDriverName());
             }
-
+    
             if (updatedReservation.getReservedVehicles() != null) {
                 for (ReservationVehicleEntity updatedVehicle : updatedReservation.getReservedVehicles()) {
                     for (ReservationVehicleEntity existingVehicle : existingReservation.getReservedVehicles()) {
