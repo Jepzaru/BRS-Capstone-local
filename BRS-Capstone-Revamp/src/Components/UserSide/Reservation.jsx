@@ -51,7 +51,6 @@ const Reservation = () => {
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
-      
     }
   }, [vehicle]);
 
@@ -193,18 +192,13 @@ const Reservation = () => {
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }
-  
-  
       evaluateButtonState(Number(formData.capacity), date, returnScheduleDate);
     }
-  
     setShowCalendar(false);
   };
   
   const evaluateButtonState = (capacity, scheduleDate, returnDate) => {
     const maxCapacity = calculateMaxCapacity();
-  
-  
     const isValidSchedule = isScheduleValid(scheduleDate, returnDate);
   
     if (capacity > maxCapacity && isValidSchedule) {

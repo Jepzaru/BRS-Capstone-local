@@ -2,9 +2,11 @@ package com.brscapstone1.brscapstone1.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +60,7 @@ public class ReservationService {
         // Set the reservation status to "Approved"
         reservation.setStatus(Constants.Annotation.APPROVED);
         reservation.setOpcIsApproved(true);
+        reservation.setOpcTimestamp(LocalDateTime.now());
         reservation.setDriverId(driverId);
         reservation.setDriverName(driverName);
     
@@ -107,9 +110,9 @@ public class ReservationService {
         }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId());
-    
+        reservation.setReservationTimestamp(LocalDateTime.now());    
+
         ReservationEntity savedReservation = resRepo.save(reservation);
-    
         List<VehicleEntity> vehicles = vehicleRepository.findAllById(vehicleIds);
     
         for (VehicleEntity vehicle : vehicles) {
@@ -177,14 +180,25 @@ public class ReservationService {
                 } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
                     existingReservation.setRejectedBy(Constants.Annotation.HEAD);
                 }
+            } else {
+                if (updatedReservation.isOpcIsApproved() != null && updatedReservation.isOpcIsApproved()) {
+                    existingReservation.setOpcIsApproved(true);
+                    existingReservation.setOpcTimestamp(LocalDateTime.now());
+                }
+    
+                if (updatedReservation.isHeadIsApproved() != null && updatedReservation.isHeadIsApproved()) {
+                    existingReservation.setHeadIsApproved(true);
+                    existingReservation.setHeadTimestamp(LocalDateTime.now());
+                }
             }
+    
             updateFields(existingReservation, updatedReservation);
-            
+    
             if (updatedReservation.getDriverId() > 0) {
                 existingReservation.setDriverId(updatedReservation.getDriverId());
                 existingReservation.setDriverName(updatedReservation.getDriverName());
             }
-
+    
             if (updatedReservation.getReservedVehicles() != null) {
                 for (ReservationVehicleEntity updatedVehicle : updatedReservation.getReservedVehicles()) {
                     for (ReservationVehicleEntity existingVehicle : existingReservation.getReservedVehicles()) {
