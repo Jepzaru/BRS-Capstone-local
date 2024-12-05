@@ -52,18 +52,19 @@ const DriverManagement = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const fetchDriverDetails = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setDrivers(data);
-      } catch (error) {
-        console.error("Failed to fetch driver details", error);
-      }
+  const fetchDriverDetails = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setDrivers(data);
+    } catch (error) {
+      console.error("Failed to fetch driver details", error);
     }
+  };
+  
+  useEffect(() => {
     fetchDriverDetails();
   }, [token]);
 
@@ -79,7 +80,6 @@ const DriverManagement = () => {
                 ? data 
                 : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10));
 
-            
             setReservations(filteredReservations);
         } catch (error) {
             console.error("Error fetching reservations:", error);
@@ -159,8 +159,7 @@ const DriverManagement = () => {
         body: JSON.stringify({ driverName, contactNumber: phoneNumber })
       });
       if (response.ok) {
-        const newDriver = await response.json();
-        setDrivers([newDriver, ...drivers]);
+        await fetchDriverDetails();  
         closeModal();
       } else {
         throw new Error('Failed to add driver');
@@ -186,25 +185,31 @@ const DriverManagement = () => {
           leaveEndDate: updateLeaveEndDate || null
         })
       });
-  
       if (response.ok) {
-        const updatedDriver = await response.json();
-  
         setDrivers(prevDrivers =>
           prevDrivers.map(driver =>
-            driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
+            driver.id === selectedDriverId
+              ? {
+                  ...driver,
+                  driverName: updateDriverName,
+                  contactNumber: updatePhoneNumber,
+                  status: updateDriverStatus,
+                  leaveStartDate: updateLeaveStartDate || null,
+                  leaveEndDate: updateLeaveEndDate || null
+                }
+              : driver
           )
         );
-  
         closeUpdateModal();
       } else {
-        const errorText = await response.text();
-        throw new Error(`Failed to update driver: ${response.status} ${errorText}`);
+        throw new Error('Failed to update driver');
       }
     } catch (error) {
       console.error("Failed to update driver", error);
     }
   };
+  
+  
   
 
   const handleDeleteDriver = async () => {
@@ -236,7 +241,10 @@ const DriverManagement = () => {
 
   const closeMessageModal = () => {
     setIsMessageModalOpen(false);
-    window.location.reload();  
+    setIsConfirmModalOpen(false); 
+    setReservations(reservations.map(reservation =>
+      reservation.id === reservationIdToComplete ? { ...reservation, is_completed: 1, status: 'Completed' } : reservation
+    ));
   };
 
   const handleComplete = async () => {
@@ -393,8 +401,8 @@ const DriverManagement = () => {
                                 }}>
                                 {driver.status}
                               </td>
-                              <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
-                              <td>{driver.leaveEndDate ? formatDate(driver.leaveEndDate) : 'N/A'}</td>
+                              <td>{driver.leaveStartDate && driver.leaveStartDate !== "0001-01-01" ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
+                              <td>{driver.leaveEndDate && driver.leaveEndDate !== "0001-01-01" ? formatDate(driver.leaveEndDate) : 'N/A'}</td>
                               <td className="td-action">
                                 <div className="button-container">
                                   <button className="driver-update-button" onClick={() => openUpdateModal(driver)}>
@@ -418,7 +426,7 @@ const DriverManagement = () => {
                     <RiReservedFill style={{ color: "#782324", marginRight: "15px", marginBottom: "-2px" }} />
                     Driver Reservations
                   </h3>
-                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "300px", marginBottom: "-2px" }} />
+                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "320px", marginBottom: "-2px" }} />
                 <select className="reservation-filter"
                   value={selectedDriverName}
                   onChange={(e) => setSelectedDriverName(e.target.value)}
