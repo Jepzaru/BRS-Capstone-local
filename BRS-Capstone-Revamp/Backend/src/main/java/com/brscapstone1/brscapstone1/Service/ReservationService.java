@@ -427,4 +427,22 @@ public class ReservationService {
 
         return resRepo.save(reservation);
     }
+
+    public ReservationEntity cancelReservation(int reservationId) {
+        ReservationEntity reservation = resRepo.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
+
+        reservation.setStatus(Constants.Annotation.CANCELED);
+        reservation.setIsCanceled(true);
+
+        if (reservation.getReservedVehicles() != null) {
+            for (ReservationVehicleEntity vehicle : reservation.getReservedVehicles()) {
+                vehicle.setStatus(Constants.Annotation.CANCELED);
+                vehicle.setIsCanceled(true); 
+                reservationVehicleRepository.save(vehicle); 
+            }
+        }
+
+        return resRepo.save(reservation);
+    }
 }

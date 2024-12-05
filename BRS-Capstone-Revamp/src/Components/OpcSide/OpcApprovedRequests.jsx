@@ -312,7 +312,22 @@ const OpcApprovedRequests = () => {
       <h2>Request Details</h2>
       <div className='viewmore-modal-container'>
         <div className='transac-container'>
-          <p style={{color: "#FFD700"}}><strong>Transaction Number:</strong> {selectedRequest.transactionId}</p>
+          <p 
+          style={{color: "#FFD700"}}><strong>Transaction Number:</strong> {selectedRequest.transactionId}
+          <span style={{marginLeft: "80px", fontWeight: "600"}}>Status: 
+            <span 
+            style={{
+              backgroundColor: "white", 
+              padding: "5px 10px", 
+              marginLeft: "20px", 
+              borderRadius:"5px",
+              fontWeight: "700",  
+              color: selectedRequest.status === "Approved" || selectedRequest.status === "Completed" ? "green" : selectedRequest.status === "Canceled" ? "red" : "black"  
+              }}>
+                {selectedRequest.status}
+                </span> 
+            </span>
+          </p>
         </div>
         <div className='viewmore-inner-container'>
           <p><strong>Requestor:</strong> {selectedRequest.userName}</p>

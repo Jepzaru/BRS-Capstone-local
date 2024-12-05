@@ -49,7 +49,7 @@ public class ReservationEntity {
     private String driverName = "N/A";
     private String rejectedBy = "N/A";
     private LocalDateTime reservationTimestamp;
-    private Boolean isCanceled;
+    private Boolean isCanceled = false;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime headTimestamp = Constants.MagicNumbers.DEFAULT_TIMESTAMP;
